@@ -1926,3 +1926,29 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 @media (max-width: 640px) {
   .exec-stats-row { grid-template-columns: 1fr; }
 }
+.password-field-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.password-field-wrap .field-input {
+  margin-bottom: 0;
+  padding-right: 42px;
+  width: 100%;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.password-toggle-icon:hover {
+  color: var(--text);
+}

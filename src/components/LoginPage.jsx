@@ -4,6 +4,7 @@ import { login, saveSession } from '../api/auth';
 const LoginPage = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -46,14 +47,24 @@ const LoginPage = ({ onLoginSuccess }) => {
         />
 
         <label className="field-label">Password</label>
-        <input
-          type="password"
-          className="field-input"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="password-field-wrap">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            className="field-input"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <span
+            className="password-toggle-icon"
+            onClick={() => setShowPassword((prev) => !prev)}
+            role="button"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+          </span>
+        </div>
 
         <button className="btn btn--primary login-submit" type="submit" disabled={loading}>
           {loading ? 'Signing in…' : 'Sign In'}

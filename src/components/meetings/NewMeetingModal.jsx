@@ -2,31 +2,11 @@ import React, { useState } from 'react';
 import { createMeeting } from '../../api/meetings';
 
 const DEPARTMENTS = ['HR', 'IT', 'Finance', 'Operations', 'Marketing'];
-const TIME_SLOTS = [
-  '09:00 AM - 10:30 AM',
-  '10:30 AM - 12:00 PM',
-  '12:00 PM - 01:00 PM',
-  '02:00 PM - 03:30 PM',
-  '03:30 PM - 05:00 PM',
-];
 const PRIORITIES = [
   { key: 'High', label: 'High Priority', note: 'Chairman attendance required', dot: 'red' },
   { key: 'Medium', label: 'Medium', note: '', dot: 'orange' },
   { key: 'Standard', label: 'Standard', note: '', dot: 'gray' },
 ];
-
-const parseSlot = (slot) => {
-  const [start, end] = slot.split(' - ');
-  return { start, end };
-};
-
-const to24Hour = (label) => {
-  const [time, meridiem] = label.split(' ');
-  let [h, m] = time.split(':').map(Number);
-  if (meridiem === 'PM' && h !== 12) h += 12;
-  if (meridiem === 'AM' && h === 12) h = 0;
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-};
 
 const isSameDay = (a, b) =>
   a.getFullYear() === b.getFullYear() &&
@@ -36,7 +16,8 @@ const isSameDay = (a, b) =>
 const NewMeetingModal = ({ open, onClose, onCreated, existingMeetings = [] }) => {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
-  const [timeSlot, setTimeSlot] = useState(TIME_SLOTS[0]);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [location, setLocation] = useState('');
   const [priority, setPriority] = useState('High');
   const [departments, setDepartments] = useState(['Finance']);
@@ -56,28 +37,19 @@ const NewMeetingModal = ({ open, onClose, onCreated, existingMeetings = [] }) =>
     setClusterHeads((prev) => prev.filter((h) => h.id !== id));
   };
 
-  const buildTimestamps = () => {
-    const { start, end } = parseSlot(timeSlot);
-    return {
-      start_time: `${date}T${to24Hour(start)}:00`,
-      end_time: `${date}T${to24Hour(end)}:00`,
-    };
-  };
-
   const meetingsOnSelectedDate = date
     ? existingMeetings.filter((m) => isSameDay(new Date(m.start_time), new Date(`${date}T00:00:00`)))
     : [];
 
   const handleSave = async (asDraft = false) => {
-    if (!title || !date) return;
+    if (!title || !date || !startTime || !endTime) return;
     setSaving(true);
     try {
-      const { start_time, end_time } = buildTimestamps();
       await createMeeting({
         title,
         location: location || null,
-        start_time,
-        end_time,
+        start_time: `${date}T${startTime}:00`,
+        end_time: `${date}T${endTime}:00`,
         priority,
         departments,
         cluster_heads: clusterHeads.map((h) => h.id),
@@ -143,12 +115,13 @@ const NewMeetingModal = ({ open, onClose, onCreated, existingMeetings = [] }) =>
                 <input type="date" className="field-input" value={date} onChange={(e) => setDate(e.target.value)} />
               </div>
               <div>
-                <label className="field-label">Time Slot</label>
-                <select className="field-input" value={timeSlot} onChange={(e) => setTimeSlot(e.target.value)}>
-                  {TIME_SLOTS.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
-                </select>
+                <label className="field-label">Start Time</label>
+                <input type="time" className="field-input" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
               </div>
             </div>
+
+            <label className="field-label">End Time</label>
+            <input type="time" className="field-input" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
 
             <label className="field-label">Location</label>
             <input
