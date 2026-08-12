@@ -56,6 +56,11 @@ def create_complaint(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
+    # Super Admin / Chairman is a reviewing role only — never submits
+    # complaints, even via direct API calls (Postman, etc).
+    if current_user.role == "Super Admin":
+        raise HTTPException(status_code=403, detail="Super Admin cannot submit complaints")
+
     reference_id = f"CB-{random.randint(89000, 89999)}"
     new_complaint = Complaint(
         **payload.dict(exclude={"submitted_by"}),
