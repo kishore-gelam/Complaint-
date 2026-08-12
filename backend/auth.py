@@ -55,3 +55,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise HTTPException(status_code=401, detail="User not found")
 
     return employee
+def require_system_admin(current_user: Employee = Depends(get_current_user)):
+    if current_user.role != "System Admin":
+        raise HTTPException(status_code=403, detail="System Admin access required")
+    return current_user

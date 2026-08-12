@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from database import Base, engine
-from routers import complaints, meetings, auth
+from routers import complaints, meetings, auth, employees
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Complaint Box API")
@@ -25,6 +25,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 app.include_router(complaints.router)
 app.include_router(meetings.router)
 app.include_router(auth.router)
+app.include_router(employees.router)
 
 @app.get("/")
 def root():

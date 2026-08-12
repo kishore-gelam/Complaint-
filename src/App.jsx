@@ -11,6 +11,7 @@ import AdminMeetingsPage from './components/AdminMeetingsPage';
 import ChairmanDashboard from './components/ChairmanDashboard';
 import ChairmanComplaints from './components/ChairmanComplaints';
 import './App.css';
+import SystemAdminEmployees from './components/SystemAdminEmployees';
 const getPageTitle = (nav, role) => {
   const isAdmin = ['Admin', 'Super Admin'].includes(role);
   const brand = role === 'Super Admin' ? "Complaint Box Chairman's Dashboard" : 'Complaint Box Admin';
@@ -18,7 +19,7 @@ const getPageTitle = (nav, role) => {
   if (nav === 'dashboard') return brand;
   if (nav === 'complaints') return isAdmin ? brand : 'Complaint Box User Portal';
   if (nav === 'meetings') return brand;
-
+  if (nav === 'employees') return 'System Admin — Employees';
   return '';
 };
 
@@ -34,7 +35,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUser && ['Admin', 'Super Admin'].includes(currentUser.role)) {
+    if (!currentUser) return;
+    if (currentUser.role === 'System Admin') {
+      setActiveNav('employees');
+    } else if (['Admin', 'Super Admin'].includes(currentUser.role)) {
       setActiveNav('dashboard');
     }
   }, [currentUser]);
@@ -80,6 +84,10 @@ const App = () => {
     ? <AdminMeetingsPage />
     : <MeetingsPage />
 )}
+
+        {activeNav === 'employees' && currentUser.role === 'System Admin' && (
+          <SystemAdminEmployees />
+        )}
       </div>
     </div>
   );

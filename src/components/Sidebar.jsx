@@ -5,7 +5,9 @@ const EMPLOYEE_NAV_ITEMS = [
   { key: 'complaints', label: 'Complaints', icon: 'fa-solid fa-triangle-exclamation' },
   { key: 'meetings', label: 'Meetings', icon: 'fa-solid fa-users' },
 ];
-
+const SYSTEM_ADMIN_NAV_ITEMS = [
+  { key: 'employees', label: 'Employees', icon: 'fa-solid fa-user-gear' },
+];
 const getAdminNavItems = (userRole) => [
   {
      key: 'dashboard',
@@ -17,18 +19,26 @@ const getAdminNavItems = (userRole) => [
 ];
 
 const Sidebar = ({ active = 'complaints', onNavigate = () => {}, onLogout = () => {}, userRole }) => {
-  const isAdmin = ['Admin', 'Super Admin'].includes(userRole);
-  const navItems = isAdmin ? getAdminNavItems(userRole) : EMPLOYEE_NAV_ITEMS;
-
+ const isAdmin = ['Admin', 'Super Admin'].includes(userRole);
+  const isSystemAdmin = userRole === 'System Admin';
+  const navItems = isSystemAdmin
+    ? SYSTEM_ADMIN_NAV_ITEMS
+    : isAdmin
+      ? getAdminNavItems(userRole)
+      : EMPLOYEE_NAV_ITEMS;
   return (
     <aside className="sidebar">
     <div className="sidebar-brand">
   <span className="sidebar-brand-icon">📋</span>
   <span className="sidebar-brand-text">
     Complaint Box
-    {isAdmin && (
+    {(isAdmin || isSystemAdmin) && (
       <span className="sidebar-brand-subtext">
-        {userRole === 'Super Admin' ? "Chairman's Dashboard" : 'Admin Portal'}
+        {userRole === 'Super Admin'
+          ? "Chairman's Dashboard"
+          : isSystemAdmin
+            ? 'System Admin'
+            : 'Admin Portal'}
       </span>
     )}
   </span>

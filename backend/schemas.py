@@ -87,5 +87,10 @@ class MeetingOut(BaseModel):
     related_complaint_id: Optional[int]
     created_by: Optional[int]
 
-    class Config:
-        from_attributes = True
+class Config:
+    from_attributes = True
+class EmployeeCreate(BaseModel):
+    name: str
+    email: str
+    password: str
+    role: str = "Employee"
