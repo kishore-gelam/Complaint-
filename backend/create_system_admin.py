@@ -7,7 +7,7 @@ db = SessionLocal()
 new_employee = Employee(
     name="System Admin",
     email="sysadmin@gksociety.com",
-    password_hash=hash_password("Sys@123"),
+    password_hash=hash_password("SysAdmin@123"),
     role="System Admin"
 )
 
