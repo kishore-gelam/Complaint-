@@ -1,0 +1,88 @@
+import React, { useState, useEffect } from 'react';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import Dashboard from './components/Dashboard';
+import MeetingsPage from './components/meetings/MeetingsPage';
+import LoginPage from './components/LoginPage';
+import { getSession, clearSession } from './api/auth';
+import AdminDashboard from './components/AdminDashboard';
+import AdminComplaints from './components/AdminComplaints';
+import AdminMeetingsPage from './components/AdminMeetingsPage';
+import ChairmanDashboard from './components/ChairmanDashboard';
+import ChairmanComplaints from './components/ChairmanComplaints';
+import './App.css';
+const getPageTitle = (nav, role) => {
+  const isAdmin = ['Admin', 'Super Admin'].includes(role);
+  const brand = role === 'Super Admin' ? "Complaint Box Chairman's Dashboard" : 'Complaint Box Admin';
+
+  if (nav === 'dashboard') return brand;
+  if (nav === 'complaints') return isAdmin ? brand : 'Complaint Box User Portal';
+  if (nav === 'meetings') return brand;
+
+  return '';
+};
+
+const App = () => {
+  const [activeNav, setActiveNav] = useState('complaints');
+  const [currentUser, setCurrentUser] = useState(null);
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  useEffect(() => {
+    const session = getSession();
+    if (session) setCurrentUser(session.user);
+    setCheckingSession(false);
+  }, []);
+
+  useEffect(() => {
+    if (currentUser && ['Admin', 'Super Admin'].includes(currentUser.role)) {
+      setActiveNav('dashboard');
+    }
+  }, [currentUser]);
+
+  const handleLogout = () => {
+    clearSession();
+    setCurrentUser(null);
+  };
+
+  if (checkingSession) return null; // avoid a login-page flash on refresh
+
+  if (!currentUser) {
+    return <LoginPage onLoginSuccess={setCurrentUser} />;
+  }
+
+  const isAdmin = ['Admin', 'Super Admin'].includes(currentUser.role);
+
+  return (
+    <div className="app-shell">
+      <Sidebar active={activeNav} onNavigate={setActiveNav} onLogout={handleLogout} userRole={currentUser.role} />
+
+      <div className="app-body">
+        <Header
+  title={getPageTitle(activeNav, currentUser.role)}
+  userName={currentUser.name}
+  userRole={currentUser.role}
+/>
+
+    {activeNav === 'dashboard' && (
+  currentUser.role === 'Super Admin'
+    ? <ChairmanDashboard onViewAllComplaints={() => setActiveNav('complaints')} />
+    : <AdminDashboard userRole={currentUser.role} onViewAllComplaints={() => setActiveNav('complaints')} />
+)}
+        {activeNav === 'complaints' && (
+  currentUser.role === 'Super Admin'
+    ? <ChairmanComplaints />
+    : isAdmin
+      ? <AdminComplaints userRole={currentUser.role} />
+      : <Dashboard userRole={currentUser.role} />
+)}
+       {activeNav === 'meetings' && (
+  ['Admin', 'Super Admin'].includes(currentUser.role)
+    ? <AdminMeetingsPage />
+    : <MeetingsPage />
+)}
+      </div>
+    </div>
+  );
+};
+
+export default App;

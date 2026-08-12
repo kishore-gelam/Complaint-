@@ -1,0 +1,31 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from database import Base, engine
+from routers import complaints, meetings, auth
+
+Base.metadata.create_all(bind=engine)
+app = FastAPI(title="Complaint Box API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ],  # <-- ONLY THIS PART CHANGED
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+app.include_router(complaints.router)
+app.include_router(meetings.router)
+app.include_router(auth.router)
+
+@app.get("/")
+def root():
+    return {"message": "Complaint Box API is running"}
