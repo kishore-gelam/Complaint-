@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MonthView from './meetings/MonthView';
 import WeekView from './meetings/WeekView';
 import DayView from './meetings/DayView';
@@ -17,6 +17,7 @@ const AdminMeetingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [newMeetingOpen, setNewMeetingOpen] = useState(false);
+  const detailRef = useRef(null);
 
   const loadMeetings = async () => {
     try {
@@ -48,6 +49,12 @@ const AdminMeetingsPage = () => {
   useEffect(() => {
     loadMeetings();
   }, []);
+
+  useEffect(() => {
+    if (selectedMeeting && detailRef.current) {
+      detailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [selectedMeeting]);
 
   const monthLabel = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
 
@@ -130,11 +137,11 @@ const AdminMeetingsPage = () => {
             <div className="calendar-panel">
               {loading && <p className="table-empty-state">Loading meetings…</p>}
               {!loading && view === 'Month' && <MonthView currentDate={currentDate} events={events} onSelect={setSelectedMeeting} />}
-{!loading && view === 'Week' && <WeekView currentDate={currentDate} events={events} onSelect={setSelectedMeeting} />}
-{!loading && view === 'Day' && <DayView currentDate={currentDate} events={events} onSelect={setSelectedMeeting} />}
+              {!loading && view === 'Week' && <WeekView currentDate={currentDate} events={events} onSelect={setSelectedMeeting} />}
+              {!loading && view === 'Day' && <DayView currentDate={currentDate} events={events} onSelect={setSelectedMeeting} />}
             </div>
 
-            <div className="admin-meeting-detail-placeholder">
+            <div className="admin-meeting-detail-placeholder" ref={detailRef}>
               {selectedMeeting ? (
                 <div>
                   <h3 className="detail-section-title" style={{ marginTop: 0 }}>{selectedMeeting.title}</h3>
