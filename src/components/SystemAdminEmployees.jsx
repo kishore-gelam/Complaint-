@@ -13,6 +13,9 @@ const ROLE_OPTIONS = [
   'Super Admin',
   'System Admin',
 ];
+const DEPARTMENT_OPTIONS = [
+  'Infrastructure', 'Operations', 'Loans', 'IT Department', 'Hr', 'Administration', 'Other'
+];
 
 const FIELD_KEY_MAP = { employee_name: 'name', employee_email: 'email', employee_password: 'password' };
 
@@ -228,13 +231,12 @@ const SystemAdminEmployees = () => {
               />
 
               <label>Department Name</label>
-              <input
-                name="department"
-                autoComplete="off"
-                value={form.department}
-                onChange={handleChange}
-                placeholder="e.g. Infrastructure, Operations, Loans"
-              />
+              <select name="department" value={form.department} onChange={handleChange}>
+                <option value="">Select Department</option>
+                {DEPARTMENT_OPTIONS.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
 
               <label>Role</label>
               <select name="role" value={form.role} onChange={handleChange}>
