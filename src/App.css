@@ -1952,3 +1952,113 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .password-toggle-icon:hover {
   color: var(--text);
 }
+
+/*---- chairman meetings page----*/
+
+
+.chairman-meetings-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.chairman-meetings-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.agenda-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.agenda-item {
+  border-left: 3px solid #e2e8f0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.agenda-item--critical {
+  border-left-color: #dc2626;
+  background: #fef2f2;
+}
+
+.agenda-time {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.agenda-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e1b4b;
+  margin: 0 0 4px;
+}
+
+.agenda-location {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0 0 8px;
+}
+
+.avatar-stack {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.avatar-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #4338ca;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-circle--more {
+  background: #94a3b8;
+}
+
+.agenda-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn--sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.deadline-card {
+  display: flex;
+  gap: 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.deadline-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400e;
+  margin: 0 0 4px;
+}
+
+.deadline-sub {
+  font-size: 12px;
+  color: #b45309;
+  margin: 0;
+}

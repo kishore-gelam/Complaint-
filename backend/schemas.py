@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional,List
+from typing import Optional, List
 from datetime import datetime
 
 # ---------- Complaints ----------
@@ -21,10 +21,10 @@ class ComplaintOut(BaseModel):
     status: str
     current_stage: str
     submitted_by: Optional[int]
-    submitter_name: Optional[str]= None
+    submitter_name: Optional[str] = None
     created_at: datetime
 
-class Config:
+    class Config:
         from_attributes = True
 
 
@@ -34,7 +34,7 @@ class ComplaintEventOut(BaseModel):
     note: Optional[str]
     created_at: datetime
 
-class Config:
+    class Config:
         from_attributes = True
 
 
@@ -42,7 +42,8 @@ class AttachmentOut(BaseModel):
     id: int
     file_url: str
     stage: str
-class Config:
+
+    class Config:
         from_attributes = True
 
 
@@ -59,13 +60,32 @@ class EmployeeOut(BaseModel):
     role: str
     created_at: datetime
 
-class Config:
+    class Config:
         from_attributes = True
 
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: EmployeeOut
+
+
+class EmployeeCreate(BaseModel):
+    name: str
+    email: str
+    password: str
+    role: str = "Employee"
+
+
+class EmployeeUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    role: Optional[str] = None
+    password: Optional[str] = None
+
+
+class EmployeeListOut(BaseModel):
+    items: List[EmployeeOut]
+    total: int
 
 
 # ---------- Meetings ----------
@@ -77,6 +97,8 @@ class MeetingCreate(BaseModel):
     end_time: datetime
     related_complaint_id: Optional[int] = None
     created_by: Optional[int] = None
+    join_url: Optional[str] = None
+    briefing_url: Optional[str] = None
 
 class MeetingOut(BaseModel):
     id: int
@@ -87,21 +109,25 @@ class MeetingOut(BaseModel):
     status: str
     related_complaint_id: Optional[int]
     created_by: Optional[int]
+    join_url: Optional[str] = None
+    briefing_url: Optional[str] = None
 
-class Config:
-    from_attributes = True
-class EmployeeCreate(BaseModel):
+    class Config:
+        from_attributes = True
+
+
+class ParticipantOut(BaseModel):
+    id: int
     name: str
-    email: str
-    password: str
-    role: str = "Employee"
 
-class EmployeeUpdate(BaseModel):
-    name: Optional[str] = None
-    email: Optional[str] = None
-    role: Optional[str] = None
-    password: Optional[str] = None
 
-class EmployeeListOut(BaseModel):
-    items: List[EmployeeOut]
-    total: int
+class MeetingAgendaOut(BaseModel):
+    id: int
+    title: str
+    location: Optional[str]
+    start_time: datetime
+    end_time: datetime
+    status: str
+    join_url: Optional[str] = None
+    briefing_url: Optional[str] = None
+    participants: List[ParticipantOut] = []

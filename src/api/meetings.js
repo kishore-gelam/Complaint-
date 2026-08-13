@@ -16,6 +16,14 @@ export async function getMeetings() {
   return res.json();
 }
 
+export async function getTodayAgenda() {
+  const res = await fetch(`${BASE_URL}/api/meetings/agenda/today`, {
+    headers: { ...authHeaders() },
+  });
+  if (!res.ok) throw new Error('Failed to fetch today agenda');
+  return res.json();
+}
+
 export async function createMeeting(payload) {
   const res = await fetch(`${BASE_URL}/api/meetings/`, {
     method: 'POST',

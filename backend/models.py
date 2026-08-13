@@ -37,6 +37,15 @@ class Meeting(Base):
     status = Column(Enum("Scheduled", "Tentative", "Cancelled"), default="Scheduled")
     related_complaint_id = Column(Integer, ForeignKey("complaints.id"), nullable=True)
     created_by = Column(Integer, ForeignKey("employees.id"))
+    join_url = Column(String(255), nullable=True)
+    briefing_url = Column(String(255), nullable=True)
+
+
+class MeetingParticipant(Base):
+    __tablename__ = "meeting_participants"
+    id = Column(Integer, primary_key=True, index=True)
+    meeting_id = Column(Integer, ForeignKey("meetings.id"))
+    employee_id = Column(Integer, ForeignKey("employees.id"))
 
 
 class ComplaintEvent(Base):
@@ -53,4 +62,4 @@ class ComplaintAttachment(Base):
     id = Column(Integer, primary_key=True, index=True)
     complaint_id = Column(Integer, ForeignKey("complaints.id"))
     file_url = Column(String(255))
-    stage = Column(String(50), default="Submitted") 
+    stage = Column(String(50), default="Submitted")

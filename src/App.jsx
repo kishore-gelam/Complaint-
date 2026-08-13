@@ -9,6 +9,7 @@ import AdminDashboard from './components/AdminDashboard';
 import AdminComplaints from './components/AdminComplaints';
 import AdminMeetingsPage from './components/AdminMeetingsPage';
 import ChairmanDashboard from './components/ChairmanDashboard';
+import ChairmanMeetings from './components/ChairmanMeetings';
 import ChairmanComplaints from './components/ChairmanComplaints';
 import './App.css';
 import SystemAdminEmployees from './components/SystemAdminEmployees';
@@ -80,10 +81,12 @@ const App = () => {
       ? <AdminComplaints userRole={currentUser.role} />
       : <Dashboard userRole={currentUser.role} />
 )}
-       {activeNav === 'meetings' && (
-  ['Admin', 'Super Admin'].includes(currentUser.role)
-    ? <AdminMeetingsPage />
-    : <MeetingsPage />
+      {activeNav === 'meetings' && (
+  currentUser.role === 'Super Admin'
+    ? <ChairmanMeetings />
+    : ['Admin'].includes(currentUser.role)
+      ? <AdminMeetingsPage />
+      : <MeetingsPage />
 )}
 
         {activeNav === 'employees' && currentUser.role === 'System Admin' && (

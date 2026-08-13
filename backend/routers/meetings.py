@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from models import Meeting, Complaint
-from schemas import MeetingCreate, MeetingOut
+from models import Meeting, Complaint, MeetingParticipant, Employee
+from schemas import MeetingCreate, MeetingOut, MeetingAgendaOut
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from auth import get_current_user
 
 router = APIRouter(prefix="/api/meetings", tags=["meetings"])
@@ -17,6 +17,44 @@ class MeetingUpdate(BaseModel):
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
     status: Optional[str] = None
+
+
+@router.get("/agenda/today", response_model=List[MeetingAgendaOut])
+def get_today_agenda(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    start_of_day = datetime.combine(datetime.today(), datetime.min.time())
+    end_of_day = start_of_day + timedelta(days=1)
+
+    todays_meetings = (
+        db.query(Meeting)
+        .filter(Meeting.start_time >= start_of_day, Meeting.start_time < end_of_day)
+        .filter(Meeting.status != "Cancelled")
+        .order_by(Meeting.start_time.asc())
+        .all()
+    )
+
+    result = []
+    for m in todays_meetings:
+        participant_rows = (
+            db.query(Employee.id, Employee.name)
+            .join(MeetingParticipant, MeetingParticipant.employee_id == Employee.id)
+            .filter(MeetingParticipant.meeting_id == m.id)
+            .all()
+        )
+        result.append({
+            "id": m.id,
+            "title": m.title,
+            "location": m.location,
+            "start_time": m.start_time,
+            "end_time": m.end_time,
+            "status": m.status,
+            "join_url": m.join_url,
+            "briefing_url": m.briefing_url,
+            "participants": [{"id": p.id, "name": p.name} for p in participant_rows],
+        })
+    return result
 
 
 @router.get("/", response_model=List[MeetingOut])
