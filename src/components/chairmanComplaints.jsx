@@ -31,6 +31,7 @@ const ChairmanComplaints = () => {
   const [dateFrom, setDateFrom] = useState('');
   const [viewComplaint, setViewComplaint] = useState(null);
   const [page, setPage] = useState(1);
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   const loadData = async () => {
     try {
@@ -203,6 +204,25 @@ const ChairmanComplaints = () => {
           Showing {filtered.length === 0 ? 0 : pageStart + 1}-{Math.min(pageStart + PAGE_SIZE, filtered.length)} of {filtered.length} results
         </span>
 
+        <div className="filter-row-pagination">
+          <button
+            className="icon-btn icon-btn--sm"
+            aria-label="Previous page"
+            disabled={page === 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            ‹
+          </button>
+          <button
+            className="icon-btn icon-btn--sm"
+            aria-label="Next page"
+            disabled={page === totalPages}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          >
+            ›
+          </button>
+        </div>
+
         <button
           className="btn btn--text"
           onClick={() => { setCategory('All Categories'); setStatusFilter('All Status'); setDateFrom(''); }}
@@ -261,10 +281,40 @@ const ChairmanComplaints = () => {
                     {c.status.toUpperCase()}
                   </span>
                 </td>
-                <td>
-                  <button className="icon-btn" aria-label="View" onClick={() => setViewComplaint(mapComplaint(c))}>
-                    <i className="fa-solid fa-eye"></i>
+                <td className="action-cell">
+                  <button
+                    className="icon-btn"
+                    aria-label="Actions"
+                    onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
+                  >
+                    <i className="fa-solid fa-ellipsis-vertical"></i>
                   </button>
+
+                  {openMenuId === c.id && (
+                    <>
+                      <div className="action-menu-backdrop" onClick={() => setOpenMenuId(null)} />
+                      <div className="action-menu">
+                        <button
+                          className="action-menu-item"
+                          onClick={() => {
+                            setViewComplaint(mapComplaint(c));
+                            setOpenMenuId(null);
+                          }}
+                        >
+                          <i className="fa-regular fa-file-lines"></i> View Employee Submission
+                        </button>
+                        <button className="action-menu-item" disabled>
+                          <i className="fa-regular fa-id-badge"></i> Review Dept Head Action
+                        </button>
+                        <button className="action-menu-item" disabled>
+                          <i className="fa-regular fa-square-check"></i> Verify Admin Status Update
+                        </button>
+                        <button className="action-menu-item" disabled>
+                          <i className="fa-solid fa-stamp"></i> Final Approval Actions
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
@@ -273,17 +323,7 @@ const ChairmanComplaints = () => {
 
         {filtered.length === 0 && <p className="table-empty-state">No complaints match this filter.</p>}
 
-        {filtered.length > 0 && (
-          <div className="table-footer">
-            <span>
-              Showing {pageStart + 1}-{Math.min(pageStart + PAGE_SIZE, filtered.length)} of {filtered.length} total entries
-            </span>
-            <div className="pagination">
-              <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Previous</button>
-              <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</button>
-            </div>
-          </div>
-        )}
+        
       </div>
 
       <div className="table-card">

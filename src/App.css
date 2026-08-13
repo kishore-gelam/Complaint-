@@ -2062,3 +2062,81 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   color: #b45309;
   margin: 0;
 }
+ /*---chairman complaint pagention*/
+
+.filter-row-pagination {
+  display: flex;
+  gap: 4px;
+}
+
+.icon-btn--sm {
+  width: 26px;
+  height: 26px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.icon-btn--sm:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.action-cell {
+  position: relative;
+}
+
+.action-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.action-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  width: 220px;
+  z-index: 50;
+  overflow: hidden;
+}
+
+.action-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.action-menu-item:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.action-menu-item:disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.action-menu-item i {
+  width: 16px;
+  text-align: center;
+  color: #64748b;
+}
+
+.action-menu-item:disabled i {
+  color: #cbd5e1;
+}
