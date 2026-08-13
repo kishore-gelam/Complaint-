@@ -1,50 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { listEmployees, createEmployee, updateEmployee } from '../api/employees';
 
-const ROLE_OPTIONS = ['Employee', 'Facility Head', 'Admin', 'HR', 'Super Admin', 'System Admin'];
+const ROLE_OPTIONS = [
+  'Employee',
+  'Infrastructure Head',
+  'Operations Head',
+  'Loans Head',
+  'IT Head',
+  'Hr Head',
+  'Admin',
+  'HR',
+  'Super Admin',
+  'System Admin',
+];
+
+const FIELD_KEY_MAP = { employee_name: 'name', employee_email: 'email', employee_password: 'password' };
 
 const SystemAdminEmployees = () => {
- const [employees, setEmployees] = useState([]);
-const [total, setTotal] = useState(0);
-const [page, setPage] = useState(1);
-const PAGE_SIZE = 5;
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState('');
-const [showModal, setShowModal] = useState(false);
-const [saving, setSaving] = useState(false);
-const [editingId, setEditingId] = useState(null);
-const [form, setForm] = useState({ name: '', email: '', password: '', role: 'Employee' });
-  
-const loadEmployees = (targetPage = page) => {
-  setLoading(true);
-  listEmployees(targetPage, PAGE_SIZE)
-    .then((res) => {
-      setEmployees(res.items);
-      setTotal(res.total);
-      setPage(targetPage);
-    })
-    .catch((e) => setError(e.message))
-    .finally(() => setLoading(false));
-};
+  const [employees, setEmployees] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 5;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState({
+    employee_code: '',
+    name: '',
+    email: '',
+    password: '',
+    role: 'Employee',
+    department: '',
+  });
+
+  const loadEmployees = (targetPage = page) => {
+    setLoading(true);
+    listEmployees(targetPage, PAGE_SIZE)
+      .then((res) => {
+        setEmployees(res.items);
+        setTotal(res.total);
+        setPage(targetPage);
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     loadEmployees();
   }, []);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const key = FIELD_KEY_MAP[e.target.name] || e.target.name;
+    setForm({ ...form, [key]: e.target.value });
   };
 
   const openAddModal = () => {
     setEditingId(null);
-    setForm({ name: '', email: '', password: '', role: 'Employee' });
+    setForm({ employee_code: '', name: '', email: '', password: '', role: 'Employee', department: '' });
     setError('');
     setShowModal(true);
   };
 
   const openEditModal = (emp) => {
     setEditingId(emp.id);
-    setForm({ name: emp.name, email: emp.email, password: '', role: emp.role });
+    setForm({
+      employee_code: emp.employee_code || '',
+      name: emp.name,
+      email: emp.email,
+      password: '',
+      role: emp.role,
+      department: emp.department || '',
+    });
     setError('');
     setShowModal(true);
   };
@@ -55,14 +83,22 @@ const loadEmployees = (targetPage = page) => {
     setError('');
     try {
       if (editingId) {
-        const updates = { name: form.name, email: form.email, role: form.role };
+        const updates = {
+          employee_code: form.employee_code,
+          name: form.name,
+          email: form.email,
+          role: form.role,
+          department: form.department || null,
+        };
         if (form.password) updates.password = form.password;
         await updateEmployee(editingId, updates);
+        setShowModal(false);
+        loadEmployees(page);
       } else {
         await createEmployee(form);
+        setShowModal(false);
+        loadEmployees(1);
       }
-      setShowModal(false);
-      loadEmployees(page);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -93,10 +129,11 @@ const loadEmployees = (targetPage = page) => {
         <table className="employees-table">
           <thead>
             <tr>
-              <th>Id</th>  
+              <th>Employee ID</th>
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Department</th>
               <th>Created</th>
               <th></th>
             </tr>
@@ -104,9 +141,15 @@ const loadEmployees = (targetPage = page) => {
           <tbody>
             {employees.map((emp) => (
               <tr key={emp.id}>
-            <td className="employee-id-cell">#{emp.id}</td>                <td>{emp.name}</td>
+                <td className="employee-id-cell">{emp.employee_code || '—'}</td>
+                <td>{emp.name}</td>
                 <td>{emp.email}</td>
-                <td><span className={`role-badge role-${emp.role.replace(/\s+/g, '-').toLowerCase()}`}>{emp.role}</span></td>
+                <td>
+                  <span className={`role-badge role-${emp.role.replace(/\s+/g, '-').toLowerCase()}`}>
+                    {emp.role}
+                  </span>
+                </td>
+                <td>{emp.department || '—'}</td>
                 <td>{formatDate(emp.created_at)}</td>
                 <td>
                   <button className="btn-link" onClick={() => openEditModal(emp)}>Edit</button>
@@ -144,20 +187,53 @@ const loadEmployees = (targetPage = page) => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>{editingId ? 'Edit Employee' : 'Add Employee'}</h3>
             {error && <div className="form-error">{error}</div>}
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} autoComplete="off">
+              <label>Employee ID</label>
+              <input
+                name="employee_code"
+                autoComplete="off"
+                value={form.employee_code}
+                onChange={handleChange}
+                placeholder="e.g. GK0801"
+                required
+              />
+
               <label>Name</label>
-              <input name="name" value={form.name} onChange={handleChange} required />
+              <input
+                name="employee_name"
+                autoComplete="off"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
 
               <label>Email</label>
-              <input type="email" name="email" value={form.email} onChange={handleChange} required />
+              <input
+                type="email"
+                name="employee_email"
+                autoComplete="off"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
 
               <label>Password {editingId && <span className="field-hint">(leave blank to keep unchanged)</span>}</label>
               <input
                 type="password"
-                name="password"
+                name="employee_password"
+                autoComplete="new-password"
                 value={form.password}
                 onChange={handleChange}
                 required={!editingId}
+              />
+
+              <label>Department Name</label>
+              <input
+                name="department"
+                autoComplete="off"
+                value={form.department}
+                onChange={handleChange}
+                placeholder="e.g. Infrastructure, Operations, Loans"
               />
 
               <label>Role</label>

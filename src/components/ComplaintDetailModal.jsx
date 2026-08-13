@@ -40,8 +40,16 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole }) => {
     : ['Submitted', 'Facility Head Inspection', 'Admin Review', 'Final Verification'];
   const currentIndex = stageOrder.indexOf(complaint.current_stage || 'Submitted');
 
+  const CATEGORY_TO_HEAD_ROLE = {
+    Infrastructure: 'Infrastructure Head',
+    Operations: 'Operations Head',
+    Loans: 'Loans Head',
+    'IT Department': 'IT Head',
+    Hr: 'Hr Head',
+  };
+
   const STAGE_PERMISSIONS = {
-    'Facility Head Inspection': ['Facility Head'],
+    'Facility Head Inspection': [CATEGORY_TO_HEAD_ROLE[complaint.category]].filter(Boolean),
     'Admin Review': ['Admin', 'HR'],
     'Final Verification': ['Super Admin'],
   };

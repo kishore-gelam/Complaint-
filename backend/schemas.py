@@ -55,9 +55,11 @@ class EmployeeLogin(BaseModel):
 
 class EmployeeOut(BaseModel):
     id: int
+    employee_code: Optional[str] = None
     name: str
     email: str
     role: str
+    department: Optional[str] = None
     created_at: datetime
 
     class Config:
@@ -70,16 +72,20 @@ class TokenResponse(BaseModel):
 
 
 class EmployeeCreate(BaseModel):
+    employee_code: str
     name: str
     email: str
     password: str
     role: str = "Employee"
+    department: Optional[str] = None
 
 
 class EmployeeUpdate(BaseModel):
+    employee_code: Optional[str] = None
     name: Optional[str] = None
     email: Optional[str] = None
     role: Optional[str] = None
+    department: Optional[str] = None
     password: Optional[str] = None
 
 

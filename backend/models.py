@@ -5,10 +5,12 @@ from database import Base
 class Employee(Base):
     __tablename__ = "employees"
     id = Column(Integer, primary_key=True, index=True)
+    employee_code = Column(String(30), unique=True, nullable=True)
     name = Column(String(100))
     email = Column(String(150), unique=True)
     password_hash = Column(String(255))
     role = Column(String(50), default="Employee")
+    department = Column(String(100), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
 
 class Complaint(Base):

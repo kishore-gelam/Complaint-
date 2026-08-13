@@ -22,8 +22,15 @@ class StageUpdate(BaseModel):
 
 STAGE_ORDER = ["Submitted", "Facility Head Inspection", "Admin Review", "Final Verification"]
 
+CATEGORY_TO_HEAD_ROLE = {
+    "Infrastructure": "Infrastructure Head",
+    "Operations": "Operations Head",
+    "Loans": "Loans Head",
+    "IT Department": "IT Head",
+    "Hr": "Hr Head",
+}
+
 STAGE_PERMISSIONS = {
-    "Facility Head Inspection": ["Facility Head"],
     "Admin Review": ["Admin", "HR"],
     "Final Verification": ["Super Admin"],
 }
@@ -39,9 +46,11 @@ def list_complaints(
     # Employees only see their own submissions.
     if current_user.role == "Employee":
         query = query.filter(Complaint.submitted_by == current_user.id)
-    # Facility Head never sees "Personal" complaints — those skip their stage entirely.
-    elif current_user.role == "Facility Head":
-        query = query.filter(Complaint.category != "Personal")
+    else:
+        # Department heads only see complaints for their own category.
+        role_to_category = {v: k for k, v in CATEGORY_TO_HEAD_ROLE.items()}
+        if current_user.role in role_to_category:
+            query = query.filter(Complaint.category == role_to_category[current_user.role])
 
     complaints = query.order_by(Complaint.created_at.desc()).all()
     for c in complaints:
@@ -133,12 +142,17 @@ def advance_stage(
         raise HTTPException(status_code=400, detail="Already at final stage")
 
     next_stage = STAGE_ORDER[current_index + 1]
-    allowed_roles = STAGE_PERMISSIONS[next_stage]
+
+    if next_stage == "Facility Head Inspection":
+        required_role = CATEGORY_TO_HEAD_ROLE.get(complaint.category)
+        allowed_roles = [required_role] if required_role else []
+    else:
+        allowed_roles = STAGE_PERMISSIONS[next_stage]
 
     if current_user.role not in allowed_roles:
         raise HTTPException(
             status_code=403,
-            detail=f"Only {' or '.join(allowed_roles)} can complete this stage"
+            detail=f"Only {' or '.join(allowed_roles) if allowed_roles else 'the assigned department head'} can complete this stage"
         )
 
     complaint.current_stage = next_stage
