@@ -12,6 +12,7 @@ import ChairmanDashboard from './components/ChairmanDashboard';
 import ChairmanComplaints from './components/ChairmanComplaints';
 import './App.css';
 import SystemAdminEmployees from './components/SystemAdminEmployees';
+import './components/SystemAdminEmployees.css';
 const getPageTitle = (nav, role) => {
   const isAdmin = ['Admin', 'Super Admin'].includes(role);
   const brand = role === 'Super Admin' ? "Complaint Box Chairman's Dashboard" : 'Complaint Box Admin';
