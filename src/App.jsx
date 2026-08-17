@@ -14,14 +14,15 @@ import ChairmanComplaints from './components/ChairmanComplaints';
 import './App.css';
 import SystemAdminEmployees from './components/SystemAdminEmployees';
 import './components/SystemAdminEmployees.css';
+
 const getPageTitle = (nav, role) => {
   const isAdmin = ['Admin', 'Super Admin'].includes(role);
   const brand = role === 'Super Admin' ? "Complaint Box Chairman's Dashboard" : 'Complaint Box Admin';
 
   if (nav === 'dashboard') return brand;
   if (nav === 'complaints') return isAdmin ? brand : 'Complaint Box User Portal';
-  if (nav === 'meetings') return brand;
-  if (nav === 'employees') return 'System Admin — Employees';
+  if (nav === 'meetings') return isAdmin ? brand : 'Complaint Box User Portal';
+
   return '';
 };
 
