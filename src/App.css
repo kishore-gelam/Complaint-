@@ -2140,3 +2140,44 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 .action-menu-item:disabled i {
   color: #cbd5e1;
 }
+
+
+.modal.resolution-modal {
+  width: 900px;
+  max-width: 92vw;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.resolution-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  width: 100%;
+}
+
+.resolution-grid .resolution-column,
+.resolution-grid > .resolution-panel {
+  min-width: 0;
+}
+
+.resolution-textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.upload-dropzone {
+  width: 100%;
+  box-sizing: border-box;
+}
+.resolution-panel .detail-description,
+.resolution-panel .timeline-note {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.resolution-panel {
+  overflow: hidden;
+  box-sizing: border-box;
+}

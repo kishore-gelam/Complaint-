@@ -357,11 +357,12 @@ const ChairmanComplaints = () => {
         </button>
       </div>
 
-      <ComplaintDetailModal
+     <ComplaintDetailModal
         open={!!viewComplaint}
         complaint={viewComplaint}
         onClose={() => setViewComplaint(null)}
         userRole="Super Admin"
+        onUpdated={loadData}
       />
     </main>
   );

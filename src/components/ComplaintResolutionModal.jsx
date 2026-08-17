@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { advanceStage, uploadAttachment, getAttachments, getComplaintEvents } from '../api/complaints';
 
+const CATEGORY_TO_HEAD_ROLE = {
+  Infrastructure: 'Infrastructure Head',
+  Operations: 'Operations Head',
+  Loans: 'Loans Head',
+  'IT Department': 'IT Head',
+  Hr: 'Hr Head',
+};
+
 const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
   const [comment, setComment] = useState('');
   const [file, setFile] = useState(null);
@@ -58,10 +66,18 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
 
   const isResolved = complaint.status === 'Resolved';
 
+  const headRoleLabel = CATEGORY_TO_HEAD_ROLE[complaint.category] || 'Facility Head';
+
   const roadmap = stageOrder.map((label, index) => {
     const ev = eventByTitle[label];
+    const displayLabel =
+      label === 'Final Verification'
+        ? 'Final Verification'
+        : label === 'Facility Head Inspection'
+          ? `${headRoleLabel} Inspection`
+          : label;
     return {
-      label: label === 'Final Verification' ? 'Final Verification' : label,
+      label: displayLabel,
       done: isResolved || index < currentIndex,
       current: !isResolved && index === currentIndex,
       time: formatTime(ev) || (isResolved ? 'Completed' : index === currentIndex ? 'In progress' : index < currentIndex ? 'Completed' : 'Pending'),
@@ -143,12 +159,12 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
               <p className="timeline-note">
                 {isResolved
                   ? 'This complaint has already been resolved.'
-                  : 'This complaint is not currently awaiting Facility Head action.'}
+                  : 'This complaint is not currently awaiting your action.'}
               </p>
             ) : (
               <>
                 <label className="detail-section-title" style={{ fontSize: '0.8rem' }}>
-                  Facility Head Comments &amp; Actions Taken <span style={{ color: '#c0562e' }}>*</span>
+                  {headRoleLabel} Comments &amp; Actions Taken <span style={{ color: '#c0562e' }}>*</span>
                 </label>
                 <textarea
                   className="resolution-textarea"

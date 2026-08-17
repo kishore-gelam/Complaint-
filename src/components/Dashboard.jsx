@@ -122,7 +122,8 @@ const Dashboard = ({ userRole }) => {
         />
       )}
 
-{['Infrastructure Head', 'Operations Head', 'Loans Head', 'IT Head', 'Hr Head'].includes(userRole) ? (        <ComplaintResolutionModal
+{['Infrastructure Head', 'Operations Head', 'Loans Head', 'IT Head', 'Hr Head'].includes(userRole) ? (       
+   <ComplaintResolutionModal
           open={!!viewComplaint}
           complaint={viewComplaint}
           onClose={() => setViewComplaint(null)}
@@ -134,6 +135,7 @@ const Dashboard = ({ userRole }) => {
           complaint={viewComplaint}
           onClose={() => setViewComplaint(null)}
           userRole={userRole}
+          onUpdated={loadData}
         />
       )}
     </main>

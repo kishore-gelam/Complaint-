@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { getComplaintEvents, getAttachments, advanceStage } from '../api/complaints';
 
-const ComplaintDetailModal = ({ open, complaint, onClose, userRole }) => {
+const CATEGORY_TO_HEAD_ROLE = {
+  Infrastructure: 'Infrastructure Head',
+  Operations: 'Operations Head',
+  Loans: 'Loans Head',
+  'IT Department': 'IT Head',
+  Hr: 'Hr Head',
+};
+
+const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated }) => {
   const [events, setEvents] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [advancing, setAdvancing] = useState(false);
+  const [comment, setComment] = useState('');
 
   useEffect(() => {
     if (open && complaint?.dbId) {
@@ -19,6 +28,9 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole }) => {
           setAttachments(attachmentsData);
         })
         .finally(() => setLoading(false));
+    }
+    if (open) {
+      setComment('');
     }
   }, [open, complaint]);
 
@@ -40,13 +52,7 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole }) => {
     : ['Submitted', 'Facility Head Inspection', 'Admin Review', 'Final Verification'];
   const currentIndex = stageOrder.indexOf(complaint.current_stage || 'Submitted');
 
-  const CATEGORY_TO_HEAD_ROLE = {
-    Infrastructure: 'Infrastructure Head',
-    Operations: 'Operations Head',
-    Loans: 'Loans Head',
-    'IT Department': 'IT Head',
-    Hr: 'Hr Head',
-  };
+  const headRoleLabel = CATEGORY_TO_HEAD_ROLE[complaint.category] || 'Facility Head';
 
   const STAGE_PERMISSIONS = {
     'Facility Head Inspection': [CATEGORY_TO_HEAD_ROLE[complaint.category]].filter(Boolean),
@@ -56,8 +62,14 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole }) => {
 
   const stages = stageOrder.map((label, index) => {
     const stageEvent = eventByTitle[label];
+    const displayLabel =
+      label === 'Final Verification'
+        ? 'Final Verification - Super Admin'
+        : label === 'Facility Head Inspection'
+          ? `${headRoleLabel} Inspection`
+          : label;
     return {
-      label: label === 'Final Verification' ? 'Final Verification - Super Admin' : label,
+      label: displayLabel,
       state: isResolved
         ? 'is-done'
         : index < currentIndex ? 'is-done' : index === currentIndex ? 'is-current' : '',
@@ -74,12 +86,17 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole }) => {
   const canAdvance = !isResolved && nextStage && STAGE_PERMISSIONS[nextStage]?.includes(userRole);
 
   const handleAdvance = async () => {
+    if (!comment.trim()) {
+      alert('Please add your comments before submitting.');
+      return;
+    }
     setAdvancing(true);
     try {
-      await advanceStage(complaint.dbId);
+      await advanceStage(complaint.dbId, comment);
+      onUpdated && onUpdated();
       onClose();
     } catch (err) {
-      console.error(err);
+      alert(err.message || 'Failed to update stage');
     } finally {
       setAdvancing(false);
     }
@@ -150,9 +167,21 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole }) => {
         )}
 
         {canAdvance && (
-          <button className="btn btn--primary" onClick={handleAdvance} disabled={advancing}>
-            {advancing ? 'Updating…' : `Complete "${nextStage}"`}
-          </button>
+          <>
+            <label className="detail-section-title" style={{ fontSize: '0.8rem' }}>
+              Comments &amp; Actions Taken <span style={{ color: '#c0562e' }}>*</span>
+            </label>
+            <textarea
+              className="resolution-textarea"
+              rows={4}
+              placeholder="Describe the review outcome, decision, and next steps…"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <button className="btn btn--primary" onClick={handleAdvance} disabled={advancing}>
+              {advancing ? 'Updating…' : `Complete "${nextStage}"`}
+            </button>
+          </>
         )}
 
         {isResolved && resolvedNote && (
