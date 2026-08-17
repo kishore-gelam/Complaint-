@@ -2170,8 +2170,8 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   width: 100%;
   box-sizing: border-box;
 }
-.resolution-panel .detail-description,
-.resolution-panel .timeline-note {
+.detail-description,
+.timeline-note {
   word-break: break-word;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
@@ -2179,5 +2179,10 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 
 .resolution-panel {
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+.detail-modal {
+  overflow-x: hidden;
   box-sizing: border-box;
 }
