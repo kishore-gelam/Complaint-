@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getComplaints, getComplaintStats } from '../api/complaints';
 import ComplaintDetailModal from './ComplaintDetailModal';
+import DeptHeadActionModal from './DeptHeadActionModal';
 
 const TABS = ['All Complaints', 'Pending', 'In Progress', 'Resolved'];
 const CATEGORIES = ['All Categories', 'Hr', 'IT Department', 'Operations', 'Infrastructure', 'Loans', 'Personal'];
@@ -11,6 +12,13 @@ const URGENCY_STYLES = {
   Low: 'urgency--low',
   Medium: 'urgency--medium',
   High: 'urgency--high',
+};
+const CATEGORY_TO_HEAD_ROLE = {
+  Infrastructure: 'Infrastructure Head',
+  Operations: 'Operations Head',
+  Loans: 'Loans Head',
+  'IT Department': 'IT Head',
+  Hr: 'Hr Head',
 };
 
 function getInitials(name) {
@@ -30,6 +38,7 @@ const ChairmanComplaints = () => {
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [dateFrom, setDateFrom] = useState('');
   const [viewComplaint, setViewComplaint] = useState(null);
+  const [deptHeadComplaint, setDeptHeadComplaint] = useState(null);
   const [page, setPage] = useState(1);
   const [openMenuId, setOpenMenuId] = useState(null);
 
@@ -252,6 +261,7 @@ const ChairmanComplaints = () => {
               <th>Case ID</th>
               <th>Complainant</th>
               <th>Department</th>
+              <th>Assigned To</th>
               <th>Priority</th>
               <th>Status</th>
               <th>Action</th>
@@ -271,6 +281,7 @@ const ChairmanComplaints = () => {
                   </div>
                 </td>
                 <td><span className="category-chip">{c.category}</span></td>
+                <td>{CATEGORY_TO_HEAD_ROLE[c.category] || '—'}</td>
                 <td>
                   <span className={`urgency-pill ${URGENCY_STYLES[c.urgency] || ''}`}>
                     {c.urgency}
@@ -303,7 +314,13 @@ const ChairmanComplaints = () => {
                         >
                           <i className="fa-regular fa-file-lines"></i> View Employee Submission
                         </button>
-                        <button className="action-menu-item" disabled>
+                        <button
+                          className="action-menu-item"
+                          onClick={() => {
+                            setDeptHeadComplaint(mapComplaint(c));
+                            setOpenMenuId(null);
+                          }}
+                        >
                           <i className="fa-regular fa-id-badge"></i> Review Dept Head Action
                         </button>
                         <button className="action-menu-item" disabled>
@@ -363,6 +380,11 @@ const ChairmanComplaints = () => {
         onClose={() => setViewComplaint(null)}
         userRole="Super Admin"
         onUpdated={loadData}
+      />
+      <DeptHeadActionModal
+        open={!!deptHeadComplaint}
+        complaint={deptHeadComplaint}
+        onClose={() => setDeptHeadComplaint(null)}
       />
     </main>
   );

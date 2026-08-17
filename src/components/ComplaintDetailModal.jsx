@@ -37,13 +37,12 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
   if (!open || !complaint) return null;
 
   const isResolved = complaint.status === 'Resolved';
-
   const eventByTitle = Object.fromEntries(events.map((e) => [e.title, e]));
 
-  const formatTime = (event) =>
-    event
-      ? new Date(event.created_at).toLocaleString('en-US', {
-          hour: '2-digit', minute: '2-digit', month: 'short', day: '2-digit',
+  const formatDateTime = (value) =>
+    value
+      ? new Date(value).toLocaleString('en-US', {
+          hour: '2-digit', minute: '2-digit', month: 'short', day: '2-digit', year: 'numeric',
         })
       : null;
 
@@ -70,10 +69,9 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
           : label;
     return {
       label: displayLabel,
-      state: isResolved
-        ? 'is-done'
-        : index < currentIndex ? 'is-done' : index === currentIndex ? 'is-current' : '',
-      time: formatTime(stageEvent) || (
+      done: isResolved || index < currentIndex,
+      current: !isResolved && index === currentIndex,
+      time: formatDateTime(stageEvent?.created_at) || (
         isResolved ? 'Completed'
         : index === currentIndex ? 'In progress'
         : index < currentIndex ? 'Completed' : 'Pending'
@@ -83,7 +81,7 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
   });
 
   const nextStage = stageOrder[currentIndex + 1];
-  const canAdvance = !isResolved && nextStage && STAGE_PERMISSIONS[nextStage]?.includes(userRole);
+  const canAdvance = !isResolved && nextStage && userRole !== 'Super Admin' && STAGE_PERMISSIONS[nextStage]?.includes(userRole);
 
   const handleAdvance = async () => {
     if (!comment.trim()) {
@@ -106,101 +104,142 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
     window.print();
   };
 
-  const resolvedNote = eventByTitle['Resolved']?.note;
+  const submissionAttachments = attachments.filter((a) => a.stage === 'Submitted');
+  const priorityLabel = (complaint.urgency || '').toUpperCase();
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal detail-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
-
-        <div className="detail-modal-badges">
-          <span className="ref-link">#{complaint.id}</span>
-          <span className="status-pill status--review">
-            {(isResolved ? 'RESOLVED' : complaint.current_stage || 'Submitted').toUpperCase()}
-          </span>
-        </div>
-
-        <h2 className="modal-title">{complaint.subject}</h2>
-
-        <div className="detail-modal-meta">
-          <span className="category-chip">Category: {complaint.category}</span>
-          <span className="category-chip">Submitted: {complaint.date}</span>
-        </div>
-
-        <h3 className="detail-section-title">Progress Timeline</h3>
-
-        {loading && <p className="timeline-note">Loading timeline…</p>}
-
-        {!loading && (
-          <div className="timeline">
-            {stages.map((stage) => {
-              const stagePhotos = attachments.filter((a) => a.stage === stage.label);
-              return (
-                <div className="timeline-step" key={stage.label}>
-                  <span className={`timeline-dot ${stage.state}`} />
-                  <div className="timeline-content">
-                    <p className="timeline-title">{stage.label}</p>
-                    <p className="timeline-time">{stage.time}</p>
-                    {stage.note && <p className="timeline-note">{stage.note}</p>}
-
-                    {stagePhotos.length > 0 && (
-                      <div className="evidence-thumbs">
-                        {stagePhotos.map((a) => {
-                          const rawName = decodeURIComponent(a.file_url.split('/').pop());
-                          const displayName = rawName.split('_').slice(2).join('_') || rawName;
-                          return (
-                            <a key={a.id} href={a.file_url} target="_blank" rel="noreferrer" className="evidence-thumb-card">
-                              <div className="evidence-thumb">
-                                <img src={a.file_url} alt={displayName} />
-                              </div>
-                              <span className="evidence-thumb-caption">{displayName}</span>
-                            </a>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+      <div className="modal card-detail-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="card-detail-header">
+          <div>
+            <h2 className="card-detail-title">
+              {complaint.category} Dept — Complaint Review
+              {priorityLabel === 'HIGH' && <span className="card-detail-critical-badge">CRITICAL</span>}
+            </h2>
+            <p className="card-detail-subtitle">Reference Case ID: #{complaint.id}</p>
           </div>
-        )}
-
-        {canAdvance && (
-          <>
-            <label className="detail-section-title" style={{ fontSize: '0.8rem' }}>
-              Comments &amp; Actions Taken <span style={{ color: '#c0562e' }}>*</span>
-            </label>
-            <textarea
-              className="resolution-textarea"
-              rows={4}
-              placeholder="Describe the review outcome, decision, and next steps…"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            <button className="btn btn--primary" onClick={handleAdvance} disabled={advancing}>
-              {advancing ? 'Updating…' : `Complete "${nextStage}"`}
+          <div className="card-detail-header-actions">
+            <button className="btn btn--outline" onClick={handleDownloadPDF}>
+              <i className="fa-solid fa-download"></i> Download PDF
             </button>
-          </>
-        )}
+            <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
+          </div>
+        </div>
 
-        {isResolved && resolvedNote && (
-          <>
-            <h3 className="detail-section-title">Resolution Notes</h3>
-            <p className="timeline-note">{resolvedNote}</p>
-          </>
-        )}
+        <div className="card-detail-grid">
+          <div className="card-detail-main">
+            <div className="card-detail-card">
+              <div className="card-detail-card-header">
+                <span className="card-detail-card-title">Complaint Details</span>
+                <span className="admin-recent-item-meta">{complaint.submitter_name || 'Employee'}</span>
+              </div>
 
-        <h3 className="detail-section-title">Description</h3>
-        <p className="detail-description">
-          {complaint.description || 'No additional description was provided for this complaint.'}
-        </p>
+              <div className="card-detail-content">
+                <h3 className="card-detail-issue-title">{complaint.subject}</h3>
+                <p className="detail-description">
+                  {complaint.description || 'No additional description was provided for this complaint.'}
+                </p>
+              </div>
 
-        <div className="modal-footer">
-          <button className="btn btn--outline detail-download-btn" onClick={handleDownloadPDF}>
-            <i className="fa-solid fa-download"></i> Download PDF
-          </button>
-          <button className="btn btn--primary" onClick={onClose}>Close</button>
+              {submissionAttachments.length > 0 && (
+                <>
+                  <p className="card-detail-evidence-label">Submitted Evidence ({submissionAttachments.length} files)</p>
+                  <div className="card-detail-evidence-grid">
+                    {submissionAttachments.map((a) => {
+                      const rawName = decodeURIComponent(a.file_url.split('/').pop());
+                      const displayName = rawName.split('_').slice(2).join('_') || rawName;
+                      return (
+                        <a key={a.id} href={a.file_url} target="_blank" rel="noreferrer" className="card-detail-evidence-item">
+                          <img src={a.file_url} alt={displayName} />
+                          <span>{displayName}</span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {canAdvance && (
+              <div className="card-detail-card">
+                <div className="card-detail-card-header">
+                  <span className="card-detail-card-title">Take Action</span>
+                </div>
+                <label className="detail-section-title" style={{ fontSize: '0.8rem', marginTop: 0 }}>
+                  Comments &amp; Actions Taken <span style={{ color: '#c0562e' }}>*</span>
+                </label>
+                <textarea
+                  className="resolution-textarea"
+                  rows={4}
+                  placeholder="Describe the review outcome, decision, and next steps…"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+                <button className="btn btn--primary" onClick={handleAdvance} disabled={advancing}>
+                  {advancing ? 'Updating…' : `Complete "${nextStage}"`}
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="card-detail-side">
+            <div className="card-detail-card">
+              <div className="card-detail-card-header">
+                <span className="card-detail-card-title">Submission Metadata</span>
+              </div>
+              <div className="card-detail-meta-row">
+                <i className="fa-regular fa-calendar"></i>
+                <div>
+                  <span className="card-detail-meta-label">Submitted</span>
+                  <span className="card-detail-meta-value">{complaint.date}</span>
+                </div>
+              </div>
+              <div className="card-detail-meta-row">
+                <i className="fa-solid fa-building"></i>
+                <div>
+                  <span className="card-detail-meta-label">Category</span>
+                  <span className="card-detail-meta-value">{complaint.category}</span>
+                </div>
+              </div>
+              <div className="card-detail-meta-row">
+                <i className="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                  <span className="card-detail-meta-label">Priority</span>
+                  <span className="card-detail-meta-value">{complaint.urgency || 'Medium'}</span>
+                </div>
+              </div>
+              <div className="card-detail-meta-row">
+                <i className="fa-solid fa-flag"></i>
+                <div>
+                  <span className="card-detail-meta-label">Current Status</span>
+                  <span className="card-detail-meta-value">
+                    {isResolved ? 'Resolved' : complaint.current_stage || 'Submitted'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="card-detail-card">
+              <div className="card-detail-card-header">
+                <span className="card-detail-card-title">Governance Status</span>
+              </div>
+              {loading && <p className="timeline-note">Loading…</p>}
+              {!loading && (
+                <div className="card-detail-status-list">
+                  {stages.map((stage) => (
+                    <div className="card-detail-status-item" key={stage.label}>
+                      <span className={`card-detail-status-dot ${stage.done ? 'is-done' : stage.current ? 'is-current' : ''}`} />
+                      <div>
+                        <p className="card-detail-status-title">{stage.label}</p>
+                        <p className="card-detail-status-time">{stage.time}</p>
+                        {stage.note && <p className="timeline-note">{stage.note}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
