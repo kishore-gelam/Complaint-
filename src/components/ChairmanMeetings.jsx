@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MonthView from './meetings/MonthView';
 import AgendaDetailModal from './AgendaDetailModal';
+import MeetingEventDetailModal from './MeetingEventDetailModal';
 import { getMeetings, getTodayAgenda } from '../api/meetings';
 import { getComplaints } from '../api/complaints';
 
@@ -30,6 +31,7 @@ const ChairmanMeetings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAgendaDetail, setShowAgendaDetail] = useState(false);
+  const[selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -123,8 +125,9 @@ const ChairmanMeetings = () => {
             </div>
           </div>
 
-          <MonthView currentDate={currentDate} events={events} onSelect={() => {}} />
-        </div>
+                    <MonthView currentDate={currentDate} events={events} onSelect={(ev) => setSelectedEvent(ev.raw || ev)} />
+                      
+                    </div>
 
         <div className="chairman-meetings-side">
           <div className="table-card">
@@ -215,6 +218,16 @@ const ChairmanMeetings = () => {
         open={showAgendaDetail}
         agenda={agenda}
         onClose={() => setShowAgendaDetail(false)}
+      />
+            <MeetingEventDetailModal
+        open={!!selectedEvent}
+        meeting={selectedEvent}
+        relatedComplaint={
+          selectedEvent
+            ? complaints.find((c) => c.id === selectedEvent.related_complaint_id)
+            : null
+        }
+        onClose={() => setSelectedEvent(null)}
       />
     </main>
   );

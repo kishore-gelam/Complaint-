@@ -20,8 +20,7 @@ const canManageRow = (c, userRole) => {
   return c.current_stage !== 'Submitted';
 };
 
-const AdminComplaints = ({ userRole }) => {
-  const [complaints, setComplaints] = useState([]);
+const AdminComplaints = ({ userRole, searchQuery = '' }) => {  const [complaints, setComplaints] = useState([]);
   const [stats, setStats] = useState({ resolved: 0, avgResolutionDays: 0, slaCompliance: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -56,7 +55,7 @@ const AdminComplaints = ({ userRole }) => {
 
   useEffect(() => {
     setPage(1);
-  }, [activeTab, category, statusFilter, dateFrom]);
+  }, [activeTab, category, statusFilter, dateFrom, searchQuery]);
 
   if (loading) return <main className="dashboard"><p>Loading…</p></main>;
   if (error) return <main className="dashboard"><p className="table-empty-state">{error}</p></main>;
@@ -73,6 +72,8 @@ const AdminComplaints = ({ userRole }) => {
     description: c.description,
   });
 
+    const q = searchQuery.trim().toLowerCase();
+
   const filtered = complaints.filter((c) => {
     const matchesCategory = category === 'All Categories' || c.category === category;
     const matchesStatus = statusFilter === 'All Status' || c.status === statusFilter;
@@ -82,7 +83,12 @@ const AdminComplaints = ({ userRole }) => {
       (activeTab === 'Pending' && c.status === 'Under Review') ||
       (activeTab === 'In Progress' && c.status === 'Meeting Scheduled') ||
       (activeTab === 'Resolved' && c.status === 'Resolved');
-    return matchesCategory && matchesStatus && matchesDate && matchesTab;
+    const matchesSearch =
+      !q ||
+      c.reference_id.toLowerCase().includes(q) ||
+      c.title.toLowerCase().includes(q) ||
+      (c.submitter_name || '').toLowerCase().includes(q);
+    return matchesCategory && matchesStatus && matchesDate && matchesTab && matchesSearch;
   });
 
   const pendingCount = complaints.filter((c) => c.status === 'Under Review').length;

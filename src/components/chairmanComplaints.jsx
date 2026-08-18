@@ -30,7 +30,7 @@ function getInitials(name) {
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
 
-const ChairmanComplaints = () => {
+const ChairmanComplaints = ({ searchQuery ='' }) => {
   const [complaints, setComplaints] = useState([]);
   const [stats, setStats] = useState({ open: 0, underReview: 0, resolved: 0, avgResolutionDays: 0, slaCompliance: 0 });
   const [loading, setLoading] = useState(true);
@@ -68,7 +68,7 @@ const ChairmanComplaints = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [activeTab, category, statusFilter, dateFrom]);
+  }, [activeTab, category, statusFilter, dateFrom, searchQuery]);
 
   if (loading) return <main className="dashboard"><p>Loading…</p></main>;
   if (error) return <main className="dashboard"><p className="table-empty-state">{error}</p></main>;
@@ -85,6 +85,8 @@ const ChairmanComplaints = () => {
     description: c.description,
   });
 
+   const q = searchQuery.trim().toLowerCase();
+
   const filtered = complaints.filter((c) => {
     const matchesCategory = category === 'All Categories' || c.category === category;
     const matchesStatus = statusFilter === 'All Status' || c.status === statusFilter;
@@ -94,7 +96,12 @@ const ChairmanComplaints = () => {
       (activeTab === 'Pending' && c.status === 'Under Review') ||
       (activeTab === 'In Progress' && c.status === 'Meeting Scheduled') ||
       (activeTab === 'Resolved' && c.status === 'Resolved');
-    return matchesCategory && matchesStatus && matchesDate && matchesTab;
+    const matchesSearch =
+      !q ||
+      c.reference_id.toLowerCase().includes(q) ||
+      c.title.toLowerCase().includes(q) ||
+      (c.submitter_name || '').toLowerCase().includes(q);
+    return matchesCategory && matchesStatus && matchesDate && matchesTab && matchesSearch;
   });
 
   const pendingCount = complaints.filter((c) => c.status === 'Under Review').length;

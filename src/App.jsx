@@ -25,11 +25,18 @@ const getPageTitle = (nav, role) => {
 
   return '';
 };
+const getSearchPlaceholder = (nav) => {
+  if (nav === 'employees') return 'Search employees…';
+  if (nav === 'meetings') return 'Search meetings…';
+  if (nav === 'complaints' || nav === 'dashboard') return 'Search complaints…';
+  return 'Quick search...';
+};
 
 const App = () => {
   const [activeNav, setActiveNav] = useState('complaints');
   const [currentUser, setCurrentUser] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
+  const[searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const session = getSession();
@@ -45,6 +52,9 @@ const App = () => {
       setActiveNav('dashboard');
     }
   }, [currentUser]);
+    useEffect(() => {
+    setSearchQuery('');
+  }, [activeNav]);
 
   const handleLogout = () => {
     clearSession();
@@ -64,10 +74,13 @@ const App = () => {
       <Sidebar active={activeNav} onNavigate={setActiveNav} onLogout={handleLogout} userRole={currentUser.role} />
 
       <div className="app-body">
-        <Header
+                <Header
   title={getPageTitle(activeNav, currentUser.role)}
   userName={currentUser.name}
   userRole={currentUser.role}
+  searchQuery={searchQuery}
+  onSearchChange={setSearchQuery}
+  searchPlaceholder={getSearchPlaceholder(activeNav)}
 />
 
     {activeNav === 'dashboard' && (
@@ -75,12 +88,12 @@ const App = () => {
     ? <ChairmanDashboard onViewAllComplaints={() => setActiveNav('complaints')} />
     : <AdminDashboard userRole={currentUser.role} onViewAllComplaints={() => setActiveNav('complaints')} />
 )}
-        {activeNav === 'complaints' && (
+               {activeNav === 'complaints' && (
   currentUser.role === 'Super Admin'
-    ? <ChairmanComplaints />
+    ? <ChairmanComplaints searchQuery={searchQuery} />
     : isAdmin
-      ? <AdminComplaints userRole={currentUser.role} />
-      : <Dashboard userRole={currentUser.role} />
+      ? <AdminComplaints userRole={currentUser.role} searchQuery={searchQuery} />
+      : <Dashboard userRole={currentUser.role} searchQuery={searchQuery} />
 )}
       {activeNav === 'meetings' && (
   currentUser.role === 'Super Admin'
@@ -90,8 +103,8 @@ const App = () => {
       : <MeetingsPage />
 )}
 
-        {activeNav === 'employees' && currentUser.role === 'System Admin' && (
-          <SystemAdminEmployees />
+               {activeNav === 'employees' && currentUser.role === 'System Admin' && (
+          <SystemAdminEmployees searchQuery={searchQuery} />
         )}
       </div>
     </div>

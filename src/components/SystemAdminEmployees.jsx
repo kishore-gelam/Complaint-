@@ -19,7 +19,7 @@ const DEPARTMENT_OPTIONS = [
 
 const FIELD_KEY_MAP = { employee_name: 'name', employee_email: 'email', employee_password: 'password' };
 
-const SystemAdminEmployees = () => {
+const SystemAdminEmployees = ({ searchQuery = '' }) => {
   const [employees, setEmployees] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -38,9 +38,15 @@ const SystemAdminEmployees = () => {
     department: '',
   });
 
+  const q = searchQuery.trim().toLowerCase();
+
   const loadEmployees = (targetPage = page) => {
     setLoading(true);
-    listEmployees(targetPage, PAGE_SIZE)
+    // While searching, fetch a large page so we search across all
+    // employees, not just the current page's 10.
+    const effectivePageSize = q ? 1000 : PAGE_SIZE;
+    const effectivePage = q ? 1 : targetPage;
+    listEmployees(effectivePage, effectivePageSize)
       .then((res) => {
         setEmployees(res.items);
         setTotal(res.total);
@@ -52,7 +58,8 @@ const SystemAdminEmployees = () => {
 
   useEffect(() => {
     loadEmployees();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
   const handleChange = (e) => {
     const key = FIELD_KEY_MAP[e.target.name] || e.target.name;
@@ -115,6 +122,15 @@ const SystemAdminEmployees = () => {
     return isNaN(d) ? '—' : d.toLocaleDateString();
   };
 
+  const visibleEmployees = employees.filter((emp) => {
+    if (!q) return true;
+    return (
+      emp.name.toLowerCase().includes(q) ||
+      emp.email.toLowerCase().includes(q) ||
+      (emp.employee_code || '').toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className="system-admin-employees">
       <div className="page-header-row">
@@ -142,7 +158,7 @@ const SystemAdminEmployees = () => {
             </tr>
           </thead>
           <tbody>
-            {employees.map((emp) => (
+            {visibleEmployees.map((emp) => (
               <tr key={emp.id}>
                 <td className="employee-id-cell">{emp.employee_code || '—'}</td>
                 <td>{emp.name}</td>
@@ -163,7 +179,14 @@ const SystemAdminEmployees = () => {
         </table>
       )}
 
-      {!loading && total > PAGE_SIZE && (
+      {!loading && !q && visibleEmployees.length === 0 && (
+        <p className="table-empty-state">No employees yet.</p>
+      )}
+      {!loading && q && visibleEmployees.length === 0 && (
+        <p className="table-empty-state">No employees match "{searchQuery}".</p>
+      )}
+
+      {!loading && !q && total > PAGE_SIZE && (
         <div className="pagination-bar">
           <button
             className="btn-secondary"

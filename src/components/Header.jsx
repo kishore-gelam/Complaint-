@@ -9,6 +9,9 @@ const Header = ({
   userName = 'ramesh',
   userRole = 'Employee',
   avatarUrl = '',
+  searchQuery = '',
+  onSearchChange = () => {},
+  searchPlaceholder = 'Quick search...',
 }) => {
   return (
     <header className="app-header">
@@ -16,7 +19,12 @@ const Header = ({
 
       <div className="app-header-search">
         <span className="app-header-search-icon">🔍</span>
-        <input type="text" placeholder="Quick search..." />
+        <input
+          type="text"
+          placeholder={searchPlaceholder}
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
       </div>
 
       <div className="app-header-actions">

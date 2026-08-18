@@ -8,7 +8,7 @@ import { getComplaints, getComplaintStats, createComplaint, updateComplaintStatu
 
 const EMPTY_STATS = { open: 0, underReview: 0, meetingsScheduled: 0, resolved: 0 };
 
-const Dashboard = ({ userRole }) => {
+const Dashboard = ({ userRole, searchQuery ='' }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [complaints, setComplaints] = useState([]);
   const [stats, setStats] = useState(EMPTY_STATS);
@@ -102,8 +102,16 @@ const Dashboard = ({ userRole }) => {
     <main className="dashboard">
       <StatsCards stats={stats} onFilterClick={setStatusFilter} activeFilter={statusFilter} />
 
-      <ComplaintsTable
-        complaints={complaints}
+            <ComplaintsTable
+        complaints={complaints.filter((c) => {
+          const q = searchQuery.trim().toLowerCase();
+          if (!q) return true;
+          return (
+            c.id.toLowerCase().includes(q) ||
+            c.subject.toLowerCase().includes(q) ||
+            (c.submitter_name || '').toLowerCase().includes(q)
+          );
+        })}
         totalCount={complaints.length}
         onAddNew={canAddComplaint ? () => setModalOpen(true) : undefined}
         showAddButton={canAddComplaint}
