@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from database import get_db
 from models import Complaint, ComplaintEvent, ComplaintAttachment, Employee
-from schemas import ComplaintCreate, ComplaintOut, ComplaintEventOut, AttachmentOut
+from schemas import ComplaintCreate, ComplaintOut, ComplaintEventOut, AttachmentOut, NotificationOut
 from typing import List, Optional
 from pydantic import BaseModel
 import random, os, shutil

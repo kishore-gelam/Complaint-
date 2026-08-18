@@ -2392,7 +2392,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   }
 }
 
-/*bell icon notification*\
+/*bell icon notification*/
 
 .notif-bell-wrap {
   position: relative;
