@@ -74,13 +74,14 @@ const App = () => {
       <Sidebar active={activeNav} onNavigate={setActiveNav} onLogout={handleLogout} userRole={currentUser.role} />
 
       <div className="app-body">
-                <Header
+                        <Header
   title={getPageTitle(activeNav, currentUser.role)}
   userName={currentUser.name}
   userRole={currentUser.role}
   searchQuery={searchQuery}
   onSearchChange={setSearchQuery}
   searchPlaceholder={getSearchPlaceholder(activeNav)}
+  userId={currentUser.id}
 />
 
     {activeNav === 'dashboard' && (

@@ -49,14 +49,16 @@ const AdminResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
         })
       : null;
 
-  const roadmap = stageOrder.map((label, index) => {
+    const roadmap = stageOrder.map((label, index) => {
     const ev = eventByTitle[label];
-    const isDone = complaint.status === 'Resolved' ? true : index <= currentIndex;
+    const isResolved = complaint.status === 'Resolved';
+    const isDone = isResolved || index < currentIndex;
+    const isCurrent = !isResolved && index === currentIndex;
     return {
       label,
       done: isDone,
-      current: complaint.status !== 'Resolved' && index === currentIndex,
-      time: formatTime(ev) || (isDone ? 'Completed' : 'Pending'),
+      current: isCurrent,
+      time: formatTime(ev) || (isDone ? 'Completed' : isCurrent ? 'In progress' : 'Pending'),
       note: ev?.note,
     };
   });

@@ -1,4 +1,5 @@
 import React from 'react';
+import NotificationBell from './NotificationBell';
 
 const ROLE_DISPLAY_LABELS = {
   'Super Admin': 'Chairman',
@@ -12,6 +13,7 @@ const Header = ({
   searchQuery = '',
   onSearchChange = () => {},
   searchPlaceholder = 'Quick search...',
+  userId,
 }) => {
   return (
     <header className="app-header">
@@ -27,8 +29,8 @@ const Header = ({
         />
       </div>
 
-      <div className="app-header-actions">
-        <button className="icon-btn" aria-label="Notifications">🔔</button>
+            <div className="app-header-actions">
+        <NotificationBell userId={userId} />
         <button className="icon-btn" aria-label="Settings">⚙️</button>
 
         <div className="app-header-user">

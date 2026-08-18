@@ -93,3 +93,10 @@ export async function getAttachments(complaintId) {
   if (!res.ok) throw new Error('Failed to fetch attachments');
   return res.json();
 }
+export async function getRecentNotifications() {
+  const res = await fetch(`${BASE_URL}/api/complaints/notifications/recent`, {
+    headers: { ...authHeaders() },
+  });
+  if (!res.ok) throw new Error('Failed to fetch notifications');
+  return res.json();
+}

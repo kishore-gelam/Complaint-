@@ -137,3 +137,12 @@ class MeetingAgendaOut(BaseModel):
     join_url: Optional[str] = None
     briefing_url: Optional[str] = None
     participants: List[ParticipantOut] = []
+
+class NotificationOut(BaseModel):
+    id: int
+    complaint_id: int
+    reference_id: str
+    complaint_title: str
+    event_title: str
+    note: Optional[str] = None
+    created_at: datetime
