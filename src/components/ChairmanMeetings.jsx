@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MonthView from './meetings/MonthView';
+import AgendaDetailModal from './AgendaDetailModal';
 import { getMeetings, getTodayAgenda } from '../api/meetings';
 import { getComplaints } from '../api/complaints';
 
@@ -28,6 +29,7 @@ const ChairmanMeetings = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAgendaDetail, setShowAgendaDetail] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -126,11 +128,15 @@ const ChairmanMeetings = () => {
 
         <div className="chairman-meetings-side">
           <div className="table-card">
-            <div className="table-card-header">
+                        <div
+              className="table-card-header"
+              style={{ cursor: agenda.length > 0 ? 'pointer' : 'default' }}
+              onClick={() => agenda.length > 0 && setShowAgendaDetail(true)}
+            >
               <span className="admin-tab-count">SCHEDULE</span>
               <h2 className="table-card-title">Agenda: Today</h2>
               {agenda.length > 0 && (
-                <span className="admin-stat-tag">{agenda.length} TASK{agenda.length === 1 ? '' : 'S'}</span>
+                <span className="admin-stat-tag">{agenda.length} SESSION{agenda.length === 1 ? '' : 'S'}</span>
               )}
             </div>
 
@@ -203,7 +209,13 @@ const ChairmanMeetings = () => {
             )}
           </div>
         </div>
-      </div>
+            </div>
+
+      <AgendaDetailModal
+        open={showAgendaDetail}
+        agenda={agenda}
+        onClose={() => setShowAgendaDetail(false)}
+      />
     </main>
   );
 };
