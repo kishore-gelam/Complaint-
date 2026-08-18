@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getComplaints, getComplaintStats } from '../api/complaints';
 import ComplaintDetailModal from './ComplaintDetailModal';
 import DeptHeadActionModal from './DeptHeadActionModal';
+import VerifyAdminStatusModal from './VerifyAdminStatusModal';
+import FinalApprovalActionsModal from './FinalApprovalActionsModal';
 
 const TABS = ['All Complaints', 'Pending', 'In Progress', 'Resolved'];
 const CATEGORIES = ['All Categories', 'Hr', 'IT Department', 'Operations', 'Infrastructure', 'Loans', 'Personal'];
@@ -39,6 +41,8 @@ const ChairmanComplaints = () => {
   const [dateFrom, setDateFrom] = useState('');
   const [viewComplaint, setViewComplaint] = useState(null);
   const [deptHeadComplaint, setDeptHeadComplaint] = useState(null);
+  const [verifyAdminComplaint, setVerifyAdminComplaint] = useState(null);
+  const [finalApprovalComplaint, setFinalApprovalComplaint] = useState(null);
   const [page, setPage] = useState(1);
   const [openMenuId, setOpenMenuId] = useState(null);
 
@@ -323,10 +327,22 @@ const ChairmanComplaints = () => {
                         >
                           <i className="fa-regular fa-id-badge"></i> Review Dept Head Action
                         </button>
-                        <button className="action-menu-item" disabled>
+                                                <button
+                          className="action-menu-item"
+                          onClick={() => {
+                            setVerifyAdminComplaint(mapComplaint(c));
+                            setOpenMenuId(null);
+                          }}
+                        >
                           <i className="fa-regular fa-square-check"></i> Verify Admin Status Update
                         </button>
-                        <button className="action-menu-item" disabled>
+                                                <button
+                          className="action-menu-item"
+                          onClick={() => {
+                            setFinalApprovalComplaint(mapComplaint(c));
+                            setOpenMenuId(null);
+                          }}
+                        >
                           <i className="fa-solid fa-stamp"></i> Final Approval Actions
                         </button>
                       </div>
@@ -385,6 +401,16 @@ const ChairmanComplaints = () => {
         open={!!deptHeadComplaint}
         complaint={deptHeadComplaint}
         onClose={() => setDeptHeadComplaint(null)}
+      />
+      <VerifyAdminStatusModal
+        open={!!verifyAdminComplaint}
+        complaint={verifyAdminComplaint}
+        onClose={() => setVerifyAdminComplaint(null)}
+      />
+      <FinalApprovalActionsModal
+        open={!!finalApprovalComplaint}
+        complaint={finalApprovalComplaint}
+        onClose={() => setFinalApprovalComplaint(null)}
       />
     </main>
   );
