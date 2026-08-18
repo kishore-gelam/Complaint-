@@ -81,7 +81,7 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
   });
 
   const nextStage = stageOrder[currentIndex + 1];
-  const canAdvance = !isResolved && nextStage && userRole !== 'Super Admin' && STAGE_PERMISSIONS[nextStage]?.includes(userRole);
+  const canAdvance = !isResolved && nextStage && !['Super Admin', 'Admin'].includes(userRole) && STAGE_PERMISSIONS[nextStage]?.includes(userRole);
 
   const handleAdvance = async () => {
     if (!comment.trim()) {
@@ -226,16 +226,36 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
               {loading && <p className="timeline-note">Loading…</p>}
               {!loading && (
                 <div className="card-detail-status-list">
-                  {stages.map((stage) => (
-                    <div className="card-detail-status-item" key={stage.label}>
-                      <span className={`card-detail-status-dot ${stage.done ? 'is-done' : stage.current ? 'is-current' : ''}`} />
-                      <div>
-                        <p className="card-detail-status-title">{stage.label}</p>
-                        <p className="card-detail-status-time">{stage.time}</p>
-                        {stage.note && <p className="timeline-note">{stage.note}</p>}
+                  {stages.map((stage, idx) => {
+                    const rawStageLabel = stageOrder[idx];
+                    const stagePhotos = rawStageLabel === 'Submitted'
+                      ? []
+                      : attachments.filter((a) => a.stage === rawStageLabel);
+                    return (
+                      <div className="card-detail-status-item" key={stage.label}>
+                        <span className={`card-detail-status-dot ${stage.done ? 'is-done' : stage.current ? 'is-current' : ''}`} />
+                        <div>
+                          <p className="card-detail-status-title">{stage.label}</p>
+                          <p className="card-detail-status-time">{stage.time}</p>
+                          {stage.note && <p className="timeline-note">{stage.note}</p>}
+                          {stagePhotos.length > 0 && (
+                            <div className="card-detail-evidence-grid" style={{ marginTop: 8 }}>
+                              {stagePhotos.map((a) => {
+                                const rawName = decodeURIComponent(a.file_url.split('/').pop());
+                                const displayName = rawName.split('_').slice(2).join('_') || rawName;
+                                return (
+                                  <a key={a.id} href={a.file_url} target="_blank" rel="noreferrer" className="card-detail-evidence-item">
+                                    <img src={a.file_url} alt={displayName} />
+                                    <span>{displayName}</span>
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
