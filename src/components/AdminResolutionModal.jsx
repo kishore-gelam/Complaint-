@@ -111,9 +111,11 @@ const AdminResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
 
             <div className="resolution-panel">
               <h3 className="detail-section-title" style={{ marginTop: 0 }}>Resolution Roadmap</h3>
-              <div className="timeline">
+                            <div className="timeline">
                 {roadmap.map((stage) => {
-                  const stagePhotos = attachments.filter((a) => a.stage === stage.label);
+                  const stagePhotos = stage.label === 'Submitted'
+                    ? []
+                    : attachments.filter((a) => a.stage === stage.label);
                   return (
                     <div className="timeline-step" key={stage.label}>
                       <span className={`timeline-dot ${stage.done ? 'is-done' : stage.current ? 'is-current' : ''}`} />

@@ -133,9 +133,12 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
 
             <div className="resolution-panel">
               <h3 className="detail-section-title" style={{ marginTop: 0 }}>Resolution Roadmap</h3>
-              <div className="timeline">
-                {roadmap.map((stage) => {
-                  const stagePhotos = attachments.filter((a) => a.stage === stage.label);
+                            <div className="timeline">
+                {roadmap.map((stage, idx) => {
+                  const rawStageLabel = stageOrder[idx];
+                  const stagePhotos = rawStageLabel === 'Submitted'
+                    ? []
+                    : attachments.filter((a) => a.stage === rawStageLabel);
                   return (
                     <div className="timeline-step" key={stage.label}>
                       <span className={`timeline-dot ${stage.done ? 'is-done' : stage.current ? 'is-current' : ''}`} />
