@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CameraCaptureModal from './CameraCaptureModal';
 import { advanceStage, uploadAttachment, getAttachments, getComplaintEvents } from '../api/complaints';
 
 const CATEGORY_TO_HEAD_ROLE = {
@@ -12,6 +13,7 @@ const CATEGORY_TO_HEAD_ROLE = {
 const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
   const [comment, setComment] = useState('');
   const [file, setFile] = useState(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [events, setEvents] = useState([]);
@@ -177,11 +179,14 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
                   onChange={(e) => setComment(e.target.value)}
                 />
 
-                <label className="detail-section-title" style={{ fontSize: '0.8rem' }}>
+                               <label className="detail-section-title" style={{ fontSize: '0.8rem' }}>
                   Upload Resolution Photo (Proof of Work) <span style={{ color: '#c0562e' }}>*</span>
                 </label>
                 <div className="upload-dropzone">
                   <input type="file" accept="image/*" onChange={handleFileChange} />
+                  <button type="button" className="dropzone-camera-btn" style={{ marginTop: 10 }} onClick={() => setCameraOpen(true)}>
+                    <span>📷</span> Take Photo
+                  </button>
                   {file && <p className="timeline-note">{file.name}</p>}
                 </div>
 
@@ -191,13 +196,20 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
                     {submitting ? 'Submitting…' : 'Submit for Admin Verification'}
                   </button>
                 </div>
-              </>
+                           </>
             )}
           </div>
         </div>
       </div>
+
+      <CameraCaptureModal
+        open={cameraOpen}
+        onClose={() => setCameraOpen(false)}
+        onCapture={(capturedFile) => setFile(capturedFile)}
+      />
     </div>
   );
 };
+
 
 export default ComplaintResolutionModal;

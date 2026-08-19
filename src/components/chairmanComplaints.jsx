@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getComplaints, getComplaintStats } from '../api/complaints';
 import ComplaintDetailModal from './ComplaintDetailModal';
-import DeptHeadActionModal from './DeptHeadActionModal';
-import VerifyAdminStatusModal from './VerifyAdminStatusModal';
-import FinalApprovalActionsModal from './FinalApprovalActionsModal';
+
 
 const TABS = ['All Complaints', 'Pending', 'In Progress', 'Resolved'];
 const CATEGORIES = ['All Categories', 'Hr', 'IT Department', 'Operations', 'Infrastructure', 'Loans', 'Personal'];
@@ -40,11 +38,8 @@ const ChairmanComplaints = ({ searchQuery ='' }) => {
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [dateFrom, setDateFrom] = useState('');
   const [viewComplaint, setViewComplaint] = useState(null);
-  const [deptHeadComplaint, setDeptHeadComplaint] = useState(null);
-  const [verifyAdminComplaint, setVerifyAdminComplaint] = useState(null);
-  const [finalApprovalComplaint, setFinalApprovalComplaint] = useState(null);
   const [page, setPage] = useState(1);
-  const [openMenuId, setOpenMenuId] = useState(null);
+  
 
   const loadData = async () => {
     try {
@@ -303,58 +298,10 @@ const ChairmanComplaints = ({ searchQuery ='' }) => {
                     {c.status.toUpperCase()}
                   </span>
                 </td>
-                <td className="action-cell">
-                  <button
-                    className="icon-btn"
-                    aria-label="Actions"
-                    onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
-                  >
-                    <i className="fa-solid fa-ellipsis-vertical"></i>
+                                <td>
+                  <button className="icon-btn" aria-label="View" onClick={() => setViewComplaint(mapComplaint(c))}>
+                    <i className="fa-solid fa-eye"></i>
                   </button>
-
-                  {openMenuId === c.id && (
-                    <>
-                      <div className="action-menu-backdrop" onClick={() => setOpenMenuId(null)} />
-                      <div className="action-menu">
-                        <button
-                          className="action-menu-item"
-                          onClick={() => {
-                            setViewComplaint(mapComplaint(c));
-                            setOpenMenuId(null);
-                          }}
-                        >
-                          <i className="fa-regular fa-file-lines"></i> View Employee Submission
-                        </button>
-                        <button
-                          className="action-menu-item"
-                          onClick={() => {
-                            setDeptHeadComplaint(mapComplaint(c));
-                            setOpenMenuId(null);
-                          }}
-                        >
-                          <i className="fa-regular fa-id-badge"></i> Review Dept Head Action
-                        </button>
-                                                <button
-                          className="action-menu-item"
-                          onClick={() => {
-                            setVerifyAdminComplaint(mapComplaint(c));
-                            setOpenMenuId(null);
-                          }}
-                        >
-                          <i className="fa-regular fa-square-check"></i> Verify Admin Status Update
-                        </button>
-                                                <button
-                          className="action-menu-item"
-                          onClick={() => {
-                            setFinalApprovalComplaint(mapComplaint(c));
-                            setOpenMenuId(null);
-                          }}
-                        >
-                          <i className="fa-solid fa-stamp"></i> Final Approval Actions
-                        </button>
-                      </div>
-                    </>
-                  )}
                 </td>
               </tr>
             ))}
@@ -404,21 +351,7 @@ const ChairmanComplaints = ({ searchQuery ='' }) => {
         userRole="Super Admin"
         onUpdated={loadData}
       />
-      <DeptHeadActionModal
-        open={!!deptHeadComplaint}
-        complaint={deptHeadComplaint}
-        onClose={() => setDeptHeadComplaint(null)}
-      />
-      <VerifyAdminStatusModal
-        open={!!verifyAdminComplaint}
-        complaint={verifyAdminComplaint}
-        onClose={() => setVerifyAdminComplaint(null)}
-      />
-      <FinalApprovalActionsModal
-        open={!!finalApprovalComplaint}
-        complaint={finalApprovalComplaint}
-        onClose={() => setFinalApprovalComplaint(null)}
-      />
+      
     </main>
   );
 };

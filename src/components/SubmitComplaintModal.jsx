@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import CameraCaptureModal from './CameraCaptureModal';
 
 const CATEGORY_OPTIONS = ['Hr', 'IT Department', 'Operations', 'Infrastructure', 'Loans', 'Personal'];
 const URGENCY_OPTIONS = ['Low', 'Medium', 'High'];
@@ -9,11 +10,14 @@ const SubmitComplaintModal = ({ open, onClose, onSubmit }) => {
   const [urgency, setUrgency] = useState('Medium');
   const [description, setDescription] = useState('');
   const [files, setFiles] = useState([]);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   if (!open) return null;
 
-  const handleFiles = (e) => {
-    setFiles(Array.from(e.target.files || []));
+    const handleFiles = (e) => {
+    const newFiles = Array.from(e.target.files || []);
+    setFiles((prev) => [...prev, ...newFiles]);
+    e.target.value = '';
   };
 
   const handleSubmit = () => {
@@ -80,24 +84,35 @@ const SubmitComplaintModal = ({ open, onClose, onSubmit }) => {
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <label className="field-label">Evidence &amp; Attachments</label>
+                <label className="field-label">Evidence &amp; Attachments</label>
         <label className="dropzone">
           <span className="dropzone-icon">☁</span>
           <span className="dropzone-text">Click or drag files to upload</span>
           <span className="dropzone-hint">PNG, JPG or PDF (Max 10MB per file)</span>
           <input type="file" multiple hidden onChange={handleFiles} />
         </label>
+
+                <button type="button" className="dropzone-camera-btn" onClick={() => setCameraOpen(true)}>
+          <span>📷</span> Take Photo
+        </button>
+
         {files.length > 0 && (
           <ul className="dropzone-file-list">
             {files.map((f) => <li key={f.name}>{f.name}</li>)}
           </ul>
         )}
 
-        <div className="modal-footer">
+               <div className="modal-footer">
           <button className="btn btn--text" onClick={onClose}>Cancel</button>
           <button className="btn btn--primary" onClick={handleSubmit}>Submit Complaint</button>
         </div>
       </div>
+
+      <CameraCaptureModal
+        open={cameraOpen}
+        onClose={() => setCameraOpen(false)}
+        onCapture={(file) => setFiles((prev) => [...prev, file])}
+      />
     </div>
   );
 };
