@@ -2516,3 +2516,10 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   max-height: 420px;
   object-fit: cover;
 }
+.notif-item--clickable {
+  cursor: pointer;
+}
+
+.notif-item--clickable:hover {
+  background: var(--bg);
+}

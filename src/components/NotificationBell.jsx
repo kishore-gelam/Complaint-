@@ -12,7 +12,7 @@ function timeAgo(dateStr) {
   return `${days}d ago`;
 }
 
-const NotificationBell = ({ userId }) => {
+const NotificationBell = ({ userId, onNotificationClick }) => {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -94,8 +94,15 @@ const NotificationBell = ({ userId }) => {
 
           {!loading && notifications.length > 0 && (
             <div className="notif-list">
-              {notifications.map((n) => (
-                <div className="notif-item" key={n.id}>
+                           {notifications.map((n) => (
+                <div
+                  className="notif-item notif-item--clickable"
+                  key={n.id}
+                  onClick={() => {
+                    closeAndMarkRead();
+                    onNotificationClick && onNotificationClick(n);
+                  }}
+                >
                   <p className="notif-item-title">
                     {n.reference_id} — {n.event_title}
                   </p>

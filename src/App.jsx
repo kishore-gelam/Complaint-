@@ -81,7 +81,11 @@ const App = () => {
   searchQuery={searchQuery}
   onSearchChange={setSearchQuery}
   searchPlaceholder={getSearchPlaceholder(activeNav)}
-  userId={currentUser.id}
+ userId={currentUser.id}
+  onNotificationClick={(n) => {
+    setActiveNav(currentUser.role === 'System Admin' ? 'employees' : 'complaints');
+    setSearchQuery(n.reference_id);
+  }}
 />
 
     {activeNav === 'dashboard' && (

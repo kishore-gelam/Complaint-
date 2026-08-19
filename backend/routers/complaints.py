@@ -249,41 +249,123 @@ def get_recent_notifications(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    query = db.query(Complaint)
-    if current_user.role == "Employee":
-        query = query.filter(Complaint.submitted_by == current_user.id)
-    else:
-        role_to_category = {v: k for k, v in CATEGORY_TO_HEAD_ROLE.items()}
-        if current_user.role in role_to_category:
-            query = query.filter(Complaint.category == role_to_category[current_user.role])
-        # Admin, HR, Super Admin see notifications across all complaints.
+    from datetime import timedelta
 
-    visible_complaint_ids = [c.id for c in query.all()]
-    if not visible_complaint_ids:
-        return []
-
-    complaint_by_id = {c.id: c for c in query.all()}
-
-    events = (
-        db.query(ComplaintEvent)
-        .filter(ComplaintEvent.complaint_id.in_(visible_complaint_ids))
-        .order_by(ComplaintEvent.created_at.desc())
-        .limit(20)
-        .all()
-    )
-
+    role = current_user.role
+    role_to_category = {v: k for k, v in CATEGORY_TO_HEAD_ROLE.items()}
     result = []
-    for e in events:
-        c = complaint_by_id.get(e.complaint_id)
-        if not c:
-            continue
-        result.append({
-            "id": e.id,
-            "complaint_id": c.id,
-            "reference_id": c.reference_id,
-            "complaint_title": c.title,
-            "event_title": e.title,
-            "note": e.note,
-            "created_at": e.created_at,
-        })
-    return result
+
+    if role == "Employee":
+        # Employee sees progress updates on their own complaints —
+        # not the "Submitted" event itself (they already know they submitted it).
+        own_ids = [c.id for c in db.query(Complaint).filter(Complaint.submitted_by == current_user.id).all()]
+        if own_ids:
+            events = (
+                db.query(ComplaintEvent)
+                .filter(ComplaintEvent.complaint_id.in_(own_ids))
+                .filter(ComplaintEvent.title != "Submitted")
+                .order_by(ComplaintEvent.created_at.desc())
+                .limit(20)
+                .all()
+            )
+            complaint_by_id = {c.id: c for c in db.query(Complaint).filter(Complaint.id.in_(own_ids)).all()}
+            for e in events:
+                c = complaint_by_id.get(e.complaint_id)
+                if c:
+                    result.append({
+                        "id": e.id, "complaint_id": c.id, "reference_id": c.reference_id,
+                        "complaint_title": c.title, "event_title": e.title, "note": e.note,
+                        "created_at": e.created_at,
+                    })
+
+    elif role in role_to_category:
+        # Department heads: notified when a new complaint in their category
+        # is submitted and awaiting their action.
+        category = role_to_category[role]
+        complaints = (
+            db.query(Complaint)
+            .filter(Complaint.category == category)
+            .order_by(Complaint.created_at.desc())
+            .limit(20)
+            .all()
+        )
+        for c in complaints:
+            submitted_event = (
+                db.query(ComplaintEvent)
+                .filter(ComplaintEvent.complaint_id == c.id, ComplaintEvent.title == "Submitted")
+                .first()
+            )
+            if submitted_event:
+                result.append({
+                    "id": submitted_event.id, "complaint_id": c.id, "reference_id": c.reference_id,
+                    "complaint_title": c.title, "event_title": "Submitted", "note": submitted_event.note,
+                    "created_at": submitted_event.created_at,
+                })
+
+    elif role in ["Admin", "HR"]:
+        # Admin: notified when a complaint reaches Admin Review — either a
+        # department head finished their inspection, or a Personal complaint
+        # was submitted directly (Personal skips the department-head stage).
+        events = (
+            db.query(ComplaintEvent)
+            .filter(ComplaintEvent.title.in_(["Facility Head Inspection"]))
+            .order_by(ComplaintEvent.created_at.desc())
+            .limit(20)
+            .all()
+        )
+        complaint_ids = [e.complaint_id for e in events]
+        personal_submitted = (
+            db.query(ComplaintEvent)
+            .join(Complaint, Complaint.id == ComplaintEvent.complaint_id)
+            .filter(Complaint.category == "Personal", ComplaintEvent.title == "Submitted")
+            .order_by(ComplaintEvent.created_at.desc())
+            .limit(20)
+            .all()
+        )
+        combined_events = events + personal_submitted
+        combined_events.sort(key=lambda e: e.created_at, reverse=True)
+        complaint_by_id = {
+            c.id: c for c in db.query(Complaint).filter(
+                Complaint.id.in_([e.complaint_id for e in combined_events])
+            ).all()
+        }
+        for e in combined_events[:20]:
+            c = complaint_by_id.get(e.complaint_id)
+            if c:
+                result.append({
+                    "id": e.id, "complaint_id": c.id, "reference_id": c.reference_id,
+                    "complaint_title": c.title, "event_title": e.title, "note": e.note,
+                    "created_at": e.created_at,
+                })
+
+    elif role == "Super Admin":
+        # Chairman: SLA escalation — complaints stuck (no stage change) for
+        # 5+ days and not yet resolved.
+        threshold = datetime.utcnow() - timedelta(days=5)
+        stale_complaints = (
+            db.query(Complaint)
+            .filter(Complaint.status != "Resolved")
+            .filter(Complaint.created_at <= threshold)
+            .order_by(Complaint.created_at.asc())
+            .limit(20)
+            .all()
+        )
+        for c in stale_complaints:
+            latest_event = (
+                db.query(ComplaintEvent)
+                .filter(ComplaintEvent.complaint_id == c.id)
+                .order_by(ComplaintEvent.created_at.desc())
+                .first()
+            )
+            last_activity = latest_event.created_at if latest_event else c.created_at
+            if last_activity <= threshold:
+                result.append({
+                    "id": c.id, "complaint_id": c.id, "reference_id": c.reference_id,
+                    "complaint_title": c.title,
+                    "event_title": "SLA Breach — No action in 5+ days",
+                    "note": f"Currently at stage: {c.current_stage}",
+                    "created_at": last_activity,
+                })
+
+    result.sort(key=lambda r: r["created_at"], reverse=True)
+    return result[:20]

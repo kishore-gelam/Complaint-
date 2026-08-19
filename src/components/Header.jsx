@@ -14,6 +14,8 @@ const Header = ({
   onSearchChange = () => {},
   searchPlaceholder = 'Quick search...',
   userId,
+  onNotificationClick,
+
 }) => {
   return (
     <header className="app-header">
@@ -30,7 +32,7 @@ const Header = ({
       </div>
 
             <div className="app-header-actions">
-        <NotificationBell userId={userId} />
+        <NotificationBell userId={userId} onNotificationClick={onNotificationClick} />
         <button className="icon-btn" aria-label="Settings">⚙️</button>
 
         <div className="app-header-user">
