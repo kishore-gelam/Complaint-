@@ -118,10 +118,7 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
             </h2>
             <p className="card-detail-subtitle">Reference Case ID: #{complaint.id}</p>
           </div>
-          <div className="card-detail-header-actions">
-            <button className="btn btn--outline" onClick={handleDownloadPDF}>
-              <i className="fa-solid fa-download"></i> Download PDF
-            </button>
+                  <div className="card-detail-header-actions">
             <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
           </div>
         </div>

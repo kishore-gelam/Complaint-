@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import CameraCaptureModal from './CameraCaptureModal';
 import { advanceStage, uploadAttachment, getAttachments, getComplaintEvents } from '../api/complaints';
+import CameraCaptureModal from './CameraCaptureModal';
 
 const CATEGORY_TO_HEAD_ROLE = {
   Infrastructure: 'Infrastructure Head',
@@ -12,11 +12,11 @@ const CATEGORY_TO_HEAD_ROLE = {
 
 const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
   const [comment, setComment] = useState('');
-  const [file, setFile] = useState(null);
-  const [cameraOpen, setCameraOpen] = useState(false);
+  const [files, setFiles] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [events, setEvents] = useState([]);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   useEffect(() => {
     if (open && complaint?.dbId) {
@@ -28,8 +28,13 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
   if (!open || !complaint) return null;
 
   const handleFileChange = (e) => {
-    const selected = e.target.files?.[0];
-    if (selected) setFile(selected);
+    const selected = Array.from(e.target.files || []);
+    if (selected.length > 0) setFiles((prev) => [...prev, ...selected]);
+    e.target.value = '';
+  };
+
+  const removeFile = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -37,14 +42,16 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
       alert('Please add your comments before submitting.');
       return;
     }
-    if (!file) {
-      alert('Please upload a resolution photo before submitting.');
+    if (files.length === 0) {
+      alert('Please upload at least one resolution photo before submitting.');
       return;
     }
 
     setSubmitting(true);
     try {
-      await uploadAttachment(complaint.dbId, file, 'Facility Head Inspection');
+      for (const f of files) {
+        await uploadAttachment(complaint.dbId, f, 'Facility Head Inspection');
+      }
       await advanceStage(complaint.dbId, comment);
       onUpdated && onUpdated();
       onClose();
@@ -135,7 +142,7 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
 
             <div className="resolution-panel">
               <h3 className="detail-section-title" style={{ marginTop: 0 }}>Resolution Roadmap</h3>
-                            <div className="timeline">
+              <div className="timeline">
                 {roadmap.map((stage, idx) => {
                   const rawStageLabel = stageOrder[idx];
                   const stagePhotos = rawStageLabel === 'Submitted'
@@ -179,15 +186,26 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
                   onChange={(e) => setComment(e.target.value)}
                 />
 
-                               <label className="detail-section-title" style={{ fontSize: '0.8rem' }}>
+                <label className="detail-section-title" style={{ fontSize: '0.8rem' }}>
                   Upload Resolution Photo (Proof of Work) <span style={{ color: '#c0562e' }}>*</span>
                 </label>
                 <div className="upload-dropzone">
-                  <input type="file" accept="image/*" onChange={handleFileChange} />
+                  <input type="file" accept="image/*" multiple onChange={handleFileChange} />
                   <button type="button" className="dropzone-camera-btn" style={{ marginTop: 10 }} onClick={() => setCameraOpen(true)}>
                     <span>📷</span> Take Photo
                   </button>
-                  {file && <p className="timeline-note">{file.name}</p>}
+                  {files.length > 0 && (
+                    <ul className="dropzone-file-list">
+                      {files.map((f, i) => (
+                        <li key={i}>
+                          {f.name}{' '}
+                          <button type="button" className="btn--text" style={{ padding: '0 4px' }} onClick={() => removeFile(i)}>
+                            ✕
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
                 <div className="modal-footer">
@@ -196,7 +214,7 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
                     {submitting ? 'Submitting…' : 'Submit for Admin Verification'}
                   </button>
                 </div>
-                           </>
+              </>
             )}
           </div>
         </div>
@@ -205,11 +223,10 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
       <CameraCaptureModal
         open={cameraOpen}
         onClose={() => setCameraOpen(false)}
-        onCapture={(capturedFile) => setFile(capturedFile)}
+        onCapture={(capturedFile) => setFiles((prev) => [...prev, capturedFile])}
       />
     </div>
   );
 };
-
 
 export default ComplaintResolutionModal;
