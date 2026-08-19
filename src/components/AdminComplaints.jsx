@@ -20,7 +20,8 @@ const canManageRow = (c, userRole) => {
   return c.current_stage !== 'Submitted';
 };
 
-const AdminComplaints = ({ userRole, searchQuery = '' }) => {  const [complaints, setComplaints] = useState([]);
+const AdminComplaints = ({ userRole, searchQuery = '' }) => {
+  const [complaints, setComplaints] = useState([]);
   const [stats, setStats] = useState({ resolved: 0, avgResolutionDays: 0, slaCompliance: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -72,7 +73,7 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {  const [complaints
     description: c.description,
   });
 
-    const q = searchQuery.trim().toLowerCase();
+  const q = searchQuery.trim().toLowerCase();
 
   const filtered = complaints.filter((c) => {
     const matchesCategory = category === 'All Categories' || c.category === category;
@@ -97,6 +98,12 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {  const [complaints
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageStart = (page - 1) * PAGE_SIZE;
   const pageItems = filtered.slice(pageStart, pageStart + PAGE_SIZE);
+
+  const maxButtons = 3;
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.min(maxButtons, totalPages); i++) {
+    pageNumbers.push(i);
+  }
 
   const handleExportCSV = () => {
     const headers = ['Reference ID', 'Sender', 'Category', 'Date', 'Status'];
@@ -262,8 +269,19 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {  const [complaints
               Showing {pageStart + 1}-{Math.min(pageStart + PAGE_SIZE, filtered.length)} of {filtered.length} total entries
             </span>
             <div className="pagination">
-              <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Previous</button>
-              <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</button>
+              <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>‹</button>
+              {pageNumbers.map((p) => (
+                <button key={p} className={page === p ? 'is-active' : ''} onClick={() => setPage(p)}>{p}</button>
+              ))}
+              {totalPages > maxButtons && (
+                <>
+                  <span className="pagination-ellipsis">…</span>
+                  <button className={page === totalPages ? 'is-active' : ''} onClick={() => setPage(totalPages)}>
+                    {totalPages}
+                  </button>
+                </>
+              )}
+              <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>›</button>
             </div>
           </div>
         )}
@@ -283,6 +301,7 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {  const [complaints
         complaint={viewComplaint}
         onClose={() => setViewComplaint(null)}
         userRole={userRole}
+        onUpdated={loadData}
       />
 
       <AdminResolutionModal

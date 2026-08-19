@@ -33,14 +33,29 @@ const NotificationBell = ({ userId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
+    const closeAndMarkRead = () => {
+    const now = Date.now();
+    localStorage.setItem(storageKey, String(now));
+    setLastSeen(now);
+    setOpen(false);
+  };
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
-        setOpen(false);
+        setOpen((wasOpen) => {
+          if (wasOpen) {
+            const now = Date.now();
+            localStorage.setItem(storageKey, String(now));
+            setLastSeen(now);
+          }
+          return false;
+        });
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const unreadCount = notifications.filter((n) => new Date(n.created_at).getTime() > lastSeen).length;

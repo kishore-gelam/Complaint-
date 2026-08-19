@@ -6,8 +6,10 @@ const STATUS_STYLES = {
   'Resolved': 'status--resolved',
 };
 
-const CATEGORIES = ['All Categories', 'Hr', 'IT Department', 'Operations', 'Infrastructure', 'Loans','Personal '];
+const CATEGORIES = ['All Categories', 'Hr', 'IT Department', 'Operations', 'Infrastructure', 'Loans', 'Personal'];
 const STATUSES = ['All Statuses', 'Under Review', 'Meeting Scheduled', 'Resolved'];
+const PAGE_SIZE = 10;
+const DEPARTMENT_HEAD_ROLES = ['Infrastructure Head', 'Operations Head', 'Loans Head', 'IT Head', 'Hr Head'];
 
 const ComplaintsTable = ({
   complaints,
@@ -17,14 +19,14 @@ const ComplaintsTable = ({
   statusFilter,
   onStatusFilterChange,
   onStatusChange,
-  userRole, 
+  userRole,
   showAddButton,
 }) => {
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [page, setPage] = useState(1);
-  const totalPages = 33;
 
-  const canEditStatus = userRole === 'Admin' ; 
+  const canEditStatus = userRole === 'Admin';
+  const isDepartmentHead = DEPARTMENT_HEAD_ROLES.includes(userRole);
 
   const status = statusFilter;
 
@@ -34,26 +36,49 @@ const ComplaintsTable = ({
     return matchesCategory && matchesStatus;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const pageStart = (safePage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(pageStart, pageStart + PAGE_SIZE);
+
+  const maxButtons = 3;
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.min(maxButtons, totalPages); i++) {
+    pageNumbers.push(i);
+  }
+
   return (
     <section className="complaints-panel">
       <div className="complaints-toolbar">
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <select
+          value={category}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            setPage(1);
+          }}
+        >
           {CATEGORIES.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
 
-        <select value={status} onChange={(e) => onStatusFilterChange(e.target.value)}>
+        <select
+          value={status}
+          onChange={(e) => {
+            onStatusFilterChange(e.target.value);
+            setPage(1);
+          }}
+        >
           {STATUSES.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
 
         {showAddButton && (
-  <button className="btn btn--primary complaints-add-btn" onClick={onAddNew}>
-    + Add New Complaint
-  </button>
-)}
+          <button className="btn btn--primary complaints-add-btn" onClick={onAddNew}>
+            + Add New Complaint
+          </button>
+        )}
       </div>
 
       <div className="table-card">
@@ -71,7 +96,7 @@ const ComplaintsTable = ({
             </tr>
           </thead>
           <tbody>
-            {filtered.map((c) => (
+            {pageItems.map((c) => (
               <tr key={c.id}>
                 <td>{c.date}</td>
                 <td><a href={`#${c.id}`} className="ref-link">#{c.id}</a></td>
@@ -95,16 +120,16 @@ const ComplaintsTable = ({
                   )}
                 </td>
                 <td>
-  {userRole === 'Facility Head' ? (
-    <button className="btn btn--outline btn--small" onClick={() => onView && onView(c)}>
-      Manage
-    </button>
-  ) : (
-    <button className="icon-btn" aria-label="View" onClick={() => onView && onView(c)}>
-      👁
-    </button>
-  )}
-</td>
+                  {isDepartmentHead ? (
+                    <button className="btn btn--outline btn--small" onClick={() => onView && onView(c)}>
+                      Manage
+                    </button>
+                  ) : (
+                    <button className="icon-btn" aria-label="View" onClick={() => onView && onView(c)}>
+                      👁
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -114,18 +139,28 @@ const ComplaintsTable = ({
           <p className="table-empty-state">No complaints match this filter.</p>
         )}
 
-        <div className="table-footer">
-          <span>Showing 1-{filtered.length} of {totalCount} submissions</span>
-          <div className="pagination">
-            <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>‹</button>
-            {[1, 2, 3].map((p) => (
-              <button key={p} className={page === p ? 'is-active' : ''} onClick={() => setPage(p)}>{p}</button>
-            ))}
-            <span className="pagination-ellipsis">…</span>
-            <button className={page === totalPages ? 'is-active' : ''} onClick={() => setPage(totalPages)}>{totalPages}</button>
-            <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>›</button>
+        {filtered.length > 0 && (
+          <div className="table-footer">
+            <span>
+              Showing {pageStart + 1}-{Math.min(pageStart + PAGE_SIZE, filtered.length)} of {filtered.length} submissions
+            </span>
+            <div className="pagination">
+              <button disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>‹</button>
+              {pageNumbers.map((p) => (
+                <button key={p} className={safePage === p ? 'is-active' : ''} onClick={() => setPage(p)}>{p}</button>
+              ))}
+              {totalPages > maxButtons && (
+                <>
+                  <span className="pagination-ellipsis">…</span>
+                  <button className={safePage === totalPages ? 'is-active' : ''} onClick={() => setPage(totalPages)}>
+                    {totalPages}
+                  </button>
+                </>
+              )}
+              <button disabled={safePage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>›</button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
