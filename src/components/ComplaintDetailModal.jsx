@@ -59,6 +59,8 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
     'Final Verification': ['Super Admin'],
   };
 
+  const submissionAttachments = attachments.filter((a) => a.stage === 'Submitted');
+
   const stages = stageOrder.map((label, index) => {
     const stageEvent = eventByTitle[label];
     const displayLabel =
@@ -100,11 +102,6 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
     }
   };
 
-  const handleDownloadPDF = () => {
-    window.print();
-  };
-
-  const submissionAttachments = attachments.filter((a) => a.stage === 'Submitted');
   const priorityLabel = (complaint.urgency || '').toUpperCase();
 
   return (
@@ -118,45 +115,13 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
             </h2>
             <p className="card-detail-subtitle">Reference Case ID: #{complaint.id}</p>
           </div>
-                  <div className="card-detail-header-actions">
+          <div className="card-detail-header-actions">
             <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
           </div>
         </div>
 
         <div className="card-detail-grid">
           <div className="card-detail-main">
-            <div className="card-detail-card">
-              <div className="card-detail-card-header">
-                <span className="card-detail-card-title">Complaint Details</span>
-                <span className="admin-recent-item-meta">{complaint.submitter_name || 'Employee'}</span>
-              </div>
-
-              <div className="card-detail-content">
-                <h3 className="card-detail-issue-title">{complaint.subject}</h3>
-                <p className="detail-description">
-                  {complaint.description || 'No additional description was provided for this complaint.'}
-                </p>
-              </div>
-
-              {submissionAttachments.length > 0 && (
-                <>
-                  <p className="card-detail-evidence-label">Submitted Evidence ({submissionAttachments.length} files)</p>
-                  <div className="card-detail-evidence-grid">
-                    {submissionAttachments.map((a) => {
-                      const rawName = decodeURIComponent(a.file_url.split('/').pop());
-                      const displayName = rawName.split('_').slice(2).join('_') || rawName;
-                      return (
-                        <a key={a.id} href={a.file_url} target="_blank" rel="noreferrer" className="card-detail-evidence-item">
-                          <img src={a.file_url} alt={displayName} />
-                          <span>{displayName}</span>
-                        </a>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-            </div>
-
             {canAdvance && (
               <div className="card-detail-card">
                 <div className="card-detail-card-header">
@@ -177,6 +142,60 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
                 </button>
               </div>
             )}
+
+            <div className="card-detail-card">
+              <div className="card-detail-card-header">
+                <span className="card-detail-card-title">Governance Status</span>
+              </div>
+              {loading && <p className="timeline-note">Loading…</p>}
+              {!loading && (
+                <div className="card-detail-status-list">
+                  {stages.map((stage, idx) => {
+                    const rawStageLabel = stageOrder[idx];
+                    const isSubmittedStage = rawStageLabel === 'Submitted';
+                    const stagePhotos = isSubmittedStage
+                      ? submissionAttachments
+                      : attachments.filter((a) => a.stage === rawStageLabel);
+                    return (
+                      <div className="card-detail-status-item" key={stage.label}>
+                        <span className={`card-detail-status-dot ${stage.done ? 'is-done' : stage.current ? 'is-current' : ''}`} />
+                        <div>
+                          <p className="card-detail-status-title">{stage.label}</p>
+                          <p className="card-detail-status-time">{stage.time}</p>
+                          {stage.note && <p className="timeline-note">{stage.note}</p>}
+
+                          {isSubmittedStage && (
+                            <>
+                              <p className="timeline-note" style={{ fontWeight: 700 }}>
+                                {complaint.subject}
+                              </p>
+                              <p className="timeline-note">
+                                {complaint.description || 'No additional description was provided for this complaint.'}
+                              </p>
+                            </>
+                          )}
+
+                          {stagePhotos.length > 0 && (
+                            <div className="card-detail-evidence-grid" style={{ marginTop: 8 }}>
+                              {stagePhotos.map((a) => {
+                                const rawName = decodeURIComponent(a.file_url.split('/').pop());
+                                const displayName = rawName.split('_').slice(2).join('_') || rawName;
+                                return (
+                                  <a key={a.id} href={a.file_url} target="_blank" rel="noreferrer" className="card-detail-evidence-item">
+                                    <img src={a.file_url} alt={displayName} />
+                                    <span>{displayName}</span>
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="card-detail-side">
@@ -214,47 +233,6 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
                   </span>
                 </div>
               </div>
-            </div>
-
-            <div className="card-detail-card">
-              <div className="card-detail-card-header">
-                <span className="card-detail-card-title">Governance Status</span>
-              </div>
-              {loading && <p className="timeline-note">Loading…</p>}
-              {!loading && (
-                <div className="card-detail-status-list">
-                  {stages.map((stage, idx) => {
-                    const rawStageLabel = stageOrder[idx];
-                    const stagePhotos = rawStageLabel === 'Submitted'
-                      ? []
-                      : attachments.filter((a) => a.stage === rawStageLabel);
-                    return (
-                      <div className="card-detail-status-item" key={stage.label}>
-                        <span className={`card-detail-status-dot ${stage.done ? 'is-done' : stage.current ? 'is-current' : ''}`} />
-                        <div>
-                          <p className="card-detail-status-title">{stage.label}</p>
-                          <p className="card-detail-status-time">{stage.time}</p>
-                          {stage.note && <p className="timeline-note">{stage.note}</p>}
-                          {stagePhotos.length > 0 && (
-                            <div className="card-detail-evidence-grid" style={{ marginTop: 8 }}>
-                              {stagePhotos.map((a) => {
-                                const rawName = decodeURIComponent(a.file_url.split('/').pop());
-                                const displayName = rawName.split('_').slice(2).join('_') || rawName;
-                                return (
-                                  <a key={a.id} href={a.file_url} target="_blank" rel="noreferrer" className="card-detail-evidence-item">
-                                    <img src={a.file_url} alt={displayName} />
-                                    <span>{displayName}</span>
-                                  </a>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           </div>
         </div>

@@ -74,8 +74,8 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
       : null;
 
   const isResolved = complaint.status === 'Resolved';
-
   const headRoleLabel = CATEGORY_TO_HEAD_ROLE[complaint.category] || 'Facility Head';
+  const originalPhotos = attachments.filter((a) => a.stage === 'Submitted');
 
   const roadmap = stageOrder.map((label, index) => {
     const ev = eventByTitle[label];
@@ -111,7 +111,6 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
     </div>
   );
 
-  const originalPhotos = attachments.filter((a) => a.stage === 'Submitted');
   const canAct = !isResolved && complaint.current_stage === 'Submitted';
 
   return (
@@ -128,25 +127,13 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
         <div className="resolution-grid">
           <div className="resolution-column">
             <div className="resolution-panel">
-              <div className="resolution-panel-header">
-                <h3 className="detail-section-title" style={{ margin: 0 }}>Original Complaint</h3>
-                <span className="resolution-submitter">
-                  {complaint.submitter_name || 'Employee'}
-                </span>
-              </div>
-              <p className="timeline-note">{complaint.subject}</p>
-              <p className="detail-description">{complaint.description}</p>
-
-              {originalPhotos.length > 0 && renderEvidence(originalPhotos)}
-            </div>
-
-            <div className="resolution-panel">
               <h3 className="detail-section-title" style={{ marginTop: 0 }}>Resolution Roadmap</h3>
               <div className="timeline">
                 {roadmap.map((stage, idx) => {
                   const rawStageLabel = stageOrder[idx];
-                  const stagePhotos = rawStageLabel === 'Submitted'
-                    ? []
+                  const isSubmittedStage = rawStageLabel === 'Submitted';
+                  const stagePhotos = isSubmittedStage
+                    ? originalPhotos
                     : attachments.filter((a) => a.stage === rawStageLabel);
                   return (
                     <div className="timeline-step" key={stage.label}>
@@ -154,6 +141,18 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
                       <div className="timeline-content">
                         <p className="timeline-title">{stage.label}</p>
                         <p className="timeline-time">{stage.time}</p>
+
+                        {isSubmittedStage && (
+                          <>
+                            <p className="timeline-note" style={{ fontWeight: 700, marginBottom: 4 }}>
+                              {complaint.subject}
+                            </p>
+                            <p className="detail-description" style={{ fontSize: 13, margin: '0 0 8px' }}>
+                              {complaint.description}
+                            </p>
+                          </>
+                        )}
+
                         {stage.note && <p className="timeline-note">{stage.note}</p>}
                         {stagePhotos.length > 0 && renderEvidence(stagePhotos)}
                       </div>
