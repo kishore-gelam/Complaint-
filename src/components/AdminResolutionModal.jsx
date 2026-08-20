@@ -45,8 +45,12 @@ const AdminResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
         })
       : null;
 
+    const resolvedEvent = eventByTitle['Resolved'];
+
   const roadmap = stageOrder.map((label, index) => {
-    const ev = eventByTitle[label];
+    const ev = label === 'Admin Review' && !eventByTitle['Admin Review']
+      ? resolvedEvent
+      : eventByTitle[label];
     const isResolved = complaint.status === 'Resolved';
     const isDone = isResolved || index < currentIndex;
     const isCurrent = !isResolved && index === currentIndex;

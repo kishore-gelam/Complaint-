@@ -61,8 +61,16 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
 
   const submissionAttachments = attachments.filter((a) => a.stage === 'Submitted');
 
+    const resolvedEvent = eventByTitle['Resolved'];
+
   const stages = stageOrder.map((label, index) => {
-    const stageEvent = eventByTitle[label];
+    // Admin resolves directly via "Mark as Resolved" — that action saves
+    // its note under the "Resolved" event, not an "Admin Review" one (no
+    // separate advance-stage step happens for Admin). Fall back to it so
+    // the Admin's comment is visible under Admin Review.
+    const stageEvent = label === 'Admin Review' && !eventByTitle['Admin Review']
+      ? resolvedEvent
+      : eventByTitle[label];
     const displayLabel =
       label === 'Final Verification'
         ? 'Final Verification - Super Admin'

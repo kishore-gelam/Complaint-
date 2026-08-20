@@ -77,8 +77,12 @@ const ComplaintResolutionModal = ({ open, complaint, onClose, onUpdated }) => {
   const headRoleLabel = CATEGORY_TO_HEAD_ROLE[complaint.category] || 'Facility Head';
   const originalPhotos = attachments.filter((a) => a.stage === 'Submitted');
 
+    const resolvedEvent = eventByTitle['Resolved'];
+
   const roadmap = stageOrder.map((label, index) => {
-    const ev = eventByTitle[label];
+    const ev = label === 'Admin Review' && !eventByTitle['Admin Review']
+      ? resolvedEvent
+      : eventByTitle[label];
     const displayLabel =
       label === 'Final Verification'
         ? 'Final Verification'
