@@ -36,7 +36,7 @@ class Meeting(Base):
     location = Column(String(150))
     start_time = Column(DateTime)
     end_time = Column(DateTime)
-    status = Column(Enum("Scheduled", "Tentative", "Cancelled"), default="Scheduled")
+    status = Column(Enum("Scheduled", "Tentative", "Completed", "Cancelled"), default="Scheduled")
     related_complaint_id = Column(Integer, ForeignKey("complaints.id"), nullable=True)
     created_by = Column(Integer, ForeignKey("employees.id"))
     join_url = Column(String(255), nullable=True)

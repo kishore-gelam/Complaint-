@@ -4,7 +4,8 @@ import WeekView from './meetings/WeekView';
 import DayView from './meetings/DayView';
 import MeetingsListView from './meetings/MeetingsListView';
 import NewMeetingModal from './meetings/NewMeetingModal';
-import { getMeetings } from '../api/meetings';
+import EditMeetingModal from './meetings/EditMeetingModal';
+import { getMeetings, updateMeeting } from '../api/meetings';
 
 const VIEW_OPTIONS = ['Day', 'Week', 'Month'];
 
@@ -17,6 +18,8 @@ const AdminMeetingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [newMeetingOpen, setNewMeetingOpen] = useState(false);
+  const [rescheduleMeeting, setRescheduleMeeting] = useState(null);
+  const [completing, setCompleting] = useState(false);
   const detailRef = useRef(null);
 
   const loadMeetings = async () => {
@@ -39,6 +42,13 @@ const AdminMeetingsPage = () => {
         };
       });
       setEvents(mapped);
+
+      // Keep selectedMeeting fresh after a reschedule/complete action.
+      setSelectedMeeting((prev) => {
+        if (!prev) return prev;
+        const updated = data.find((m) => m.id === prev.id);
+        return updated || prev;
+      });
     } catch (err) {
       setEvents([]);
     } finally {
@@ -55,6 +65,12 @@ const AdminMeetingsPage = () => {
       detailRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, [selectedMeeting]);
+
+  const handleSelectEvent = (ev) => {
+    // Calendar views pass the mapped display event ({raw, title, date, ...});
+    // the list view passes the raw meeting directly. Normalize to raw either way.
+    setSelectedMeeting(ev.raw || ev);
+  };
 
   const monthLabel = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
 
@@ -78,9 +94,22 @@ const AdminMeetingsPage = () => {
     });
   };
 
+  const handleMarkComplete = async () => {
+    if (!selectedMeeting) return;
+    setCompleting(true);
+    try {
+      await updateMeeting(selectedMeeting.id, { status: 'Completed' });
+      await loadMeetings();
+    } catch (err) {
+      alert(err.message || 'Failed to mark meeting as complete');
+    } finally {
+      setCompleting(false);
+    }
+  };
+
   const now = new Date();
   const upcomingCount = meetings.filter((m) => new Date(m.start_time) >= now).length;
-  const completedCount = meetings.filter((m) => new Date(m.end_time) < now).length;
+  const completedCount = meetings.filter((m) => m.status === 'Completed').length;
   const rescheduledCount = meetings.filter((m) => m.status === 'Tentative').length;
 
   return (
@@ -136,9 +165,9 @@ const AdminMeetingsPage = () => {
 
             <div className="calendar-panel">
               {loading && <p className="table-empty-state">Loading meetings…</p>}
-              {!loading && view === 'Month' && <MonthView currentDate={currentDate} events={events} onSelect={setSelectedMeeting} />}
-              {!loading && view === 'Week' && <WeekView currentDate={currentDate} events={events} onSelect={setSelectedMeeting} />}
-              {!loading && view === 'Day' && <DayView currentDate={currentDate} events={events} onSelect={setSelectedMeeting} />}
+              {!loading && view === 'Month' && <MonthView currentDate={currentDate} events={events} onSelect={handleSelectEvent} />}
+              {!loading && view === 'Week' && <WeekView currentDate={currentDate} events={events} onSelect={handleSelectEvent} />}
+              {!loading && view === 'Day' && <DayView currentDate={currentDate} events={events} onSelect={handleSelectEvent} />}
             </div>
 
             <div className="admin-meeting-detail-placeholder" ref={detailRef}>
@@ -151,6 +180,20 @@ const AdminMeetingsPage = () => {
                     {new Date(selectedMeeting.end_time).toLocaleTimeString('en-US', { timeStyle: 'short' })}
                   </p>
                   {selectedMeeting.location && <p className="admin-recent-item-meta">{selectedMeeting.location}</p>}
+                  <p className="admin-recent-item-meta" style={{ marginTop: 6 }}>
+                    Status: <strong>{selectedMeeting.status}</strong>
+                  </p>
+
+                  {selectedMeeting.status !== 'Completed' && selectedMeeting.status !== 'Cancelled' && (
+                    <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+                      <button className="btn btn--outline btn--small" onClick={() => setRescheduleMeeting(selectedMeeting)}>
+                        Reschedule
+                      </button>
+                      <button className="btn btn--primary btn--small" onClick={handleMarkComplete} disabled={completing}>
+                        {completing ? 'Marking…' : 'Mark Complete'}
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>
@@ -180,7 +223,7 @@ const AdminMeetingsPage = () => {
           <MeetingsListView
             meetings={meetings}
             loading={loading}
-            onSelect={setSelectedMeeting}
+            onSelect={handleSelectEvent}
             onRefresh={loadMeetings}
           />
         )}
@@ -191,6 +234,13 @@ const AdminMeetingsPage = () => {
         onClose={() => setNewMeetingOpen(false)}
         onCreated={loadMeetings}
         existingMeetings={meetings}
+      />
+
+      <EditMeetingModal
+        open={!!rescheduleMeeting}
+        meeting={rescheduleMeeting}
+        onClose={() => setRescheduleMeeting(null)}
+        onUpdated={loadMeetings}
       />
     </main>
   );

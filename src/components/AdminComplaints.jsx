@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getComplaints, getComplaintStats } from '../api/complaints';
+import { getMeetings } from '../api/meetings';
 import ComplaintDetailModal from './ComplaintDetailModal';
 import ManageComplaintModal from './ManageComplaintModal';
 import AdminResolutionModal from './AdminResolutionModal';
@@ -12,10 +13,16 @@ const PAGE_SIZE = 10;
 // Super Admin is always view-only. "Personal" complaints skip Facility
 // Head entirely, so Admin can act on them right away. Every other
 // category must clear Facility Head Inspection first — Admin can't
-// jump ahead of Facility Head.
-const canManageRow = (c, userRole) => {
+// jump ahead of Facility Head. If a meeting has been scheduled for this
+// complaint, Admin can only resolve it once that meeting is marked
+// Complete — not automatically just because a meeting exists.
+
+const canManageRow = (c, userRole, meetingCompletedMap) => {
   if (userRole === 'Super Admin') return false;
   if (c.status === 'Resolved') return false;
+  if (c.status === 'Meeting Scheduled') {
+    return !!meetingCompletedMap[c.id];
+  }
   if (c.category === 'Personal') return true;
   return c.current_stage !== 'Submitted';
 };
@@ -23,6 +30,7 @@ const canManageRow = (c, userRole) => {
 const AdminComplaints = ({ userRole, searchQuery = '' }) => {
   const [complaints, setComplaints] = useState([]);
   const [stats, setStats] = useState({ resolved: 0, avgResolutionDays: 0, slaCompliance: 0 });
+  const [meetingCompletedMap, setMeetingCompletedMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('All Complaints');
@@ -37,12 +45,22 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [complaintsData, statsData] = await Promise.all([
+  const [complaintsData, statsData, meetingsData] = await Promise.all([
         getComplaints(),
         getComplaintStats(),
+        getMeetings().catch(() => []),
       ]);
       setComplaints(complaintsData);
       setStats(statsData);
+
+      // Map complaint_id -> true if it has at least one Completed meeting.
+    const map = {};
+      meetingsData.forEach((m) => {
+        if (m.status === 'Completed' && m.related_complaint_id) {
+          map[m.related_complaint_id] = true;
+        }
+      });
+      setMeetingCompletedMap(map);
     } catch (err) {
       setError('Could not load complaints.');
     } finally {
@@ -239,7 +257,7 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {
                     <button className="icon-btn" aria-label="View" onClick={() => setViewComplaint(mapComplaint(c))}>
                       <i className="fa-solid fa-eye"></i>
                     </button>
-                    {canManageRow(c, userRole) && (
+                    {canManageRow(c, userRole, meetingCompletedMap) && (
                       <>
                         <button className="btn btn--primary btn--small" onClick={() => setResolveComplaint(mapComplaint(c))}>
                           Manage
