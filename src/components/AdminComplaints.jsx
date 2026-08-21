@@ -10,20 +10,15 @@ const CATEGORIES = ['All Categories', 'Hr', 'IT Department', 'Operations', 'Infr
 const STATUSES = ['All Status', 'Under Review', 'Meeting Scheduled', 'Resolved'];
 const PAGE_SIZE = 10;
 
-// Super Admin is always view-only. "Personal" complaints skip Facility
-// Head entirely, so Admin can act on them right away. Every other
-// category must clear Facility Head Inspection first — Admin can't
-// jump ahead of Facility Head. If a meeting has been scheduled for this
-// complaint, Admin can only resolve it once that meeting is marked
-// Complete — not automatically just because a meeting exists.
-
+// Super Admin is always view-only. Personal complaints are resolved only
+// via the meeting-completion flow (no separate Manage/resolve action for
+// them). Every other category needs a Completed meeting if one was
+// scheduled, and must have cleared Facility Head Inspection first.
 const canManageRow = (c, userRole, meetingCompletedMap) => {
   if (userRole === 'Super Admin') return false;
   if (c.status === 'Resolved') return false;
-  if (c.status === 'Meeting Scheduled') {
-    return !!meetingCompletedMap[c.id];
-  }
-  if (c.category === 'Personal') return true;
+  if (c.category === 'Personal') return false;
+  if (c.status === 'Meeting Scheduled') return !!meetingCompletedMap[c.id];
   return c.current_stage !== 'Submitted';
 };
 
@@ -45,7 +40,7 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {
   const loadData = async () => {
     try {
       setLoading(true);
-  const [complaintsData, statsData, meetingsData] = await Promise.all([
+      const [complaintsData, statsData, meetingsData] = await Promise.all([
         getComplaints(),
         getComplaintStats(),
         getMeetings().catch(() => []),
@@ -53,8 +48,7 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {
       setComplaints(complaintsData);
       setStats(statsData);
 
-      // Map complaint_id -> true if it has at least one Completed meeting.
-    const map = {};
+      const map = {};
       meetingsData.forEach((m) => {
         if (m.status === 'Completed' && m.related_complaint_id) {
           map[m.related_complaint_id] = true;
@@ -258,19 +252,19 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {
                       <i className="fa-solid fa-eye"></i>
                     </button>
                     {canManageRow(c, userRole, meetingCompletedMap) && (
-                      <>
-                        <button className="btn btn--primary btn--small" onClick={() => setResolveComplaint(mapComplaint(c))}>
-                          Manage
-                        </button>
-                        <button
-                          className="icon-btn"
-                          aria-label="Schedule Meeting"
-                          title="Schedule Meeting (Chairman)"
-                          onClick={() => setManageComplaint(mapComplaint(c))}
-                        >
-                          <i className="fa-solid fa-calendar-plus"></i>
-                        </button>
-                      </>
+                      <button className="btn btn--primary btn--small" onClick={() => setResolveComplaint(mapComplaint(c))}>
+                        Manage
+                      </button>
+                    )}
+                    {c.status !== 'Resolved' && (
+                      <button
+                        className="icon-btn"
+                        aria-label="Schedule Meeting"
+                        title="Schedule Meeting"
+                        onClick={() => setManageComplaint(mapComplaint(c))}
+                      >
+                        <i className="fa-solid fa-calendar-plus"></i>
+                      </button>
                     )}
                   </div>
                 </td>

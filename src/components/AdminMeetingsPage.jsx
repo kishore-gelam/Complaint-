@@ -6,6 +6,7 @@ import MeetingsListView from './meetings/MeetingsListView';
 import NewMeetingModal from './meetings/NewMeetingModal';
 import EditMeetingModal from './meetings/EditMeetingModal';
 import { getMeetings, updateMeeting } from '../api/meetings';
+import { updateComplaintStatus } from '../api/complaints';
 
 const VIEW_OPTIONS = ['Day', 'Week', 'Month'];
 
@@ -99,6 +100,17 @@ const AdminMeetingsPage = () => {
     setCompleting(true);
     try {
       await updateMeeting(selectedMeeting.id, { status: 'Completed' });
+
+      // If this meeting was scheduled for a complaint, resolving it here
+      // closes the loop — the meeting happened, so the complaint is done.
+      if (selectedMeeting.related_complaint_id) {
+        await updateComplaintStatus(
+          selectedMeeting.related_complaint_id,
+          'Resolved',
+          'Resolved following completed meeting.'
+        );
+      }
+
       await loadMeetings();
     } catch (err) {
       alert(err.message || 'Failed to mark meeting as complete');
