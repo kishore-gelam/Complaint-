@@ -16,8 +16,8 @@ import SystemAdminEmployees from './components/SystemAdminEmployees';
 import './components/SystemAdminEmployees.css';
 
 const getPageTitle = (nav, role) => {
-  const isAdmin = ['Admin', 'Super Admin'].includes(role);
-  const brand = role === 'Super Admin' ? "Complaint Box Chairman's Dashboard" : 'Complaint Box Admin';
+const isAdmin = ['Admin', 'Super Admin'].includes(role);
+const brand = role === 'Super Admin' ? "Complaint Box Chairman's Dashboard" : 'Complaint Box Admin';
 
   if (nav === 'dashboard') return brand;
   if (nav === 'complaints') return isAdmin ? brand : 'Complaint Box User Portal';
@@ -74,18 +74,19 @@ const App = () => {
       <Sidebar active={activeNav} onNavigate={setActiveNav} onLogout={handleLogout} userRole={currentUser.role} />
 
       <div className="app-body">
-                        <Header
+                              <Header
   title={getPageTitle(activeNav, currentUser.role)}
   userName={currentUser.name}
   userRole={currentUser.role}
   searchQuery={searchQuery}
   onSearchChange={setSearchQuery}
   searchPlaceholder={getSearchPlaceholder(activeNav)}
- userId={currentUser.id}
+  userId={currentUser.id}
   onNotificationClick={(n) => {
     setActiveNav(currentUser.role === 'System Admin' ? 'employees' : 'complaints');
     setSearchQuery(n.reference_id);
   }}
+  onLogout={handleLogout}
 />
 
     {activeNav === 'dashboard' && (
