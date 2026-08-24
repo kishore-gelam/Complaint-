@@ -37,6 +37,7 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const[searchQuery, setSearchQuery] = useState('');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);   
 
   useEffect(() => {
     const session = getSession();
@@ -54,6 +55,7 @@ const App = () => {
   }, [currentUser]);
     useEffect(() => {
     setSearchQuery('');
+    setMobileSidebarOpen(false); 
   }, [activeNav]);
 
   const handleLogout = () => {
@@ -69,25 +71,33 @@ const App = () => {
 
   const isAdmin = ['Admin', 'Super Admin'].includes(currentUser.role);
 
-  return (
+   return (
     <div className="app-shell">
-      <Sidebar active={activeNav} onNavigate={setActiveNav} onLogout={handleLogout} userRole={currentUser.role} />
+      <Sidebar
+        active={activeNav}
+        onNavigate={setActiveNav}
+        onLogout={handleLogout}
+        userRole={currentUser.role}
+        mobileOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
+      />
 
       <div className="app-body">
-                              <Header
-  title={getPageTitle(activeNav, currentUser.role)}
-  userName={currentUser.name}
-  userRole={currentUser.role}
-  searchQuery={searchQuery}
-  onSearchChange={setSearchQuery}
-  searchPlaceholder={getSearchPlaceholder(activeNav)}
-  userId={currentUser.id}
-  onNotificationClick={(n) => {
-    setActiveNav(currentUser.role === 'System Admin' ? 'employees' : 'complaints');
-    setSearchQuery(n.reference_id);
-  }}
-  onLogout={handleLogout}
-/>
+        <Header
+          title={getPageTitle(activeNav, currentUser.role)}
+          userName={currentUser.name}
+          userRole={currentUser.role}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder={getSearchPlaceholder(activeNav)}
+          userId={currentUser.id}
+          onNotificationClick={(n) => {
+            setActiveNav(currentUser.role === 'System Admin' ? 'employees' : 'complaints');
+            setSearchQuery(n.reference_id);
+          }}
+          onLogout={handleLogout}
+          onMenuClick={() => setMobileSidebarOpen(true)}
+        />
 
     {activeNav === 'dashboard' && (
   currentUser.role === 'Super Admin'

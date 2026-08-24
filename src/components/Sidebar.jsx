@@ -18,7 +18,7 @@ const getAdminNavItems = (userRole) => [
   { key: 'meetings', label: 'Meetings', icon: 'fa-solid fa-calendar' },
 ];
 
-const Sidebar = ({ active = 'complaints', onNavigate = () => {}, onLogout = () => {}, userRole }) => {
+const Sidebar = ({ active = 'complaints', onNavigate = () => {}, onLogout = () => {}, userRole, mobileOpen = false, onClose =() =>{} }) => {
  const isAdmin = ['Admin', 'Super Admin'].includes(userRole);
   const isSystemAdmin = userRole === 'System Admin';
   const navItems = isSystemAdmin
@@ -26,41 +26,51 @@ const Sidebar = ({ active = 'complaints', onNavigate = () => {}, onLogout = () =
     : isAdmin
       ? getAdminNavItems(userRole)
       : EMPLOYEE_NAV_ITEMS;
-  return (
-    <aside className="sidebar">
-    <div className="sidebar-brand">
-  <span className="sidebar-brand-icon">📋</span>
-  <span className="sidebar-brand-text">
-    Complaint Box
-    {(isAdmin || isSystemAdmin) && (
-      <span className="sidebar-brand-subtext">
-        {userRole === 'Super Admin'
-          ? "Chairman's Dashboard"
-          : isSystemAdmin
-            ? 'System Admin'
-            : 'Admin Portal'}
-      </span>
-    )}
-  </span>
-</div>
+   const handleNavClick = (key) => {   
+    onNavigate(key);
+    onClose();
+  };
+    return (
+    <>
+      {mobileOpen && (
+        <div className="sidebar-overlay" onClick={onClose} />
+      )}
 
-      <nav className="sidebar-nav">
-        {navItems.map((item) => (
-          <button
-            key={item.key}
-            className={`sidebar-nav-item ${active === item.key ? 'is-active' : ''}`}
-            onClick={() => onNavigate(item.key)}
-          >
-            <span className="sidebar-nav-icon">
-              <i className={item.icon}></i>
-            </span>
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
+      <aside className={`sidebar ${mobileOpen ? 'is-open' : ''}`}>
+        <div className="sidebar-brand">
+          <span className="sidebar-brand-icon">📋</span>
+          <span className="sidebar-brand-text">
+            Complaint Box
+            {(isAdmin || isSystemAdmin) && (
+              <span className="sidebar-brand-subtext">
+                {userRole === 'Super Admin'
+                  ? "Chairman's Dashboard"
+                  : isSystemAdmin
+                    ? 'System Admin'
+                    : 'Admin Portal'}
+              </span>
+            )}
+          </span>
+        </div>
 
-      <Footer onLogout={onLogout} />
-    </aside>
+        <nav className="sidebar-nav">
+          {navItems.map((item) => (
+            <button
+              key={item.key}
+              className={`sidebar-nav-item ${active === item.key ? 'is-active' : ''}`}
+              onClick={() => handleNavClick(item.key)}
+            >
+              <span className="sidebar-nav-icon">
+                <i className={item.icon}></i>
+              </span>
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <Footer onLogout={onLogout} />
+      </aside>
+    </>
   );
 };
 

@@ -16,6 +16,7 @@ const Header = ({
   userId,
   onNotificationClick,
   onLogout = () => {},
+  onMenuClick = () => {},
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -31,6 +32,13 @@ const Header = ({
   }, []);
   return (
     <header className="app-header">
+      <button
+        className="app-header-hamburger"
+        aria-label="Open menu"
+        onClick={onMenuClick}
+      >
+        ☰
+      </button>
       <h1 className="app-header-title">{title}</h1>
 
       <div className="app-header-search">

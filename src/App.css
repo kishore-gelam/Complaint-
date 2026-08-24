@@ -584,6 +584,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   gap: 20px;
   padding: 24px 28px;
   align-items: flex-start;
+  min-width: 0;
 }
 
 .meetings-main {
@@ -642,6 +643,9 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   border-radius: 12px;
   padding: 16px;
   overflow-x: auto;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ---- Month grid ---- */
@@ -2563,4 +2567,285 @@ body { margin: 0; background: var(--bg); color: var(--text); }
 
 .user-menu-item:hover {
   background: #fef2f2;
+}
+
+/* ===================== Mobile hamburger + drawer sidebar ===================== */
+
+.app-header-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: var(--navy);
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+/* ===================== Mobile responsive (≤768px) ===================== */
+@media (max-width: 768px) {
+  .app-shell {
+    flex-direction: row;
+  }
+
+  .app-header-hamburger {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ---- Sidebar becomes an off-canvas drawer ---- */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: visible;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-brand {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: none;
+    white-space: normal;
+  }
+
+  .sidebar-nav {
+    flex-direction: column;
+    padding-top: 8px;
+    overflow-x: visible;
+  }
+
+  .sidebar-nav-item {
+    width: 100%;
+    padding: 14px 20px;
+    white-space: normal;
+    border-left: 3px solid transparent;
+    border-bottom: none;
+  }
+
+  .sidebar-nav-item.is-active {
+    border-left-color: #fff;
+    border-bottom: none;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 30, 0.5);
+    z-index: 150;
+  }
+
+  /* ---- Header ---- */
+    .app-header {
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    padding: 10px 14px;
+    row-gap: 8px;
+  }
+
+  .app-header-hamburger {
+    order: 1;
+  }
+
+  .app-header-title {
+    order: 2;
+    font-size: 15px;
+    white-space: normal;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .app-header-actions {
+    order: 3;
+    margin-left: auto;
+  }
+
+  .app-header-search {
+    order: 4;
+    max-width: 100%;
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  .app-header-user-info {
+    display: none;
+  }
+
+  /* ---- Dashboard / cards / tables / modals ---- */
+  .dashboard {
+    padding: 14px;
+    gap: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  .stat-card-value {
+    font-size: 22px;
+  }
+
+  .stat-card-label {
+    font-size: 11px;
+  }
+
+  .complaints-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .complaints-add-btn {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .table-card {
+    padding: 14px;
+    overflow-x: auto;
+  }
+
+  .complaints-table {
+    min-width: 640px;
+  }
+
+  .modal, .card-detail-modal, .resolution-modal, .detail-modal {
+    max-width: 96vw;
+    width: 96vw;
+    padding: 20px;
+  }
+
+  .card-detail-grid, .resolution-grid, .modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .meetings-page {
+    flex-direction: column;
+  }
+
+  .meetings-side-panel {
+    width: 100%;
+  }
+    .meetings-page {
+    padding: 12px;
+  }
+
+  .calendar-panel {
+    padding: 8px;
+  }
+
+  .calendar-grid-head-cell {
+    font-size: 10px;
+  }
+
+  .calendar-cell {
+    min-height: 60px;
+    padding: 4px;
+  }
+
+  .calendar-cell-day {
+    font-size: 11px;
+  }
+
+  .calendar-event-chip {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
+
+  .calendar-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+    .week-view-head,
+  .week-view-body {
+    grid-template-columns: 50px repeat(7, minmax(60px, 1fr));
+  }
+
+  .week-time-gutter,
+  .week-head-cell:first-child {
+    width: 50px;
+  }
+
+  .week-hour-label {
+    font-size: 9px;
+    padding-right: 4px;
+  }
+
+  .week-head-label {
+    font-size: 9px;
+  }
+
+  .week-head-num {
+    font-size: 12px;
+  }
+
+  .day-view-body {
+    grid-template-columns: 60px 1fr;
+  }
+
+  .day-hour-label {
+    font-size: 10px;
+  }
+
+  .calendar-panel {
+    overflow-x: auto;
+    padding-right: 12px;
+    box-sizing: border-box;
+  }
+
+  
+}
+/* ===================== Small mobile (≤480px) — tighten further ===================== */
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-header-title {
+    font-size: 14px;
+  }
+
+  .sidebar-brand-text {
+    font-size: 14px;
+  }
+
+  .admin-stat-value,
+  .exec-stat-value {
+    font-size: 20px;
+  }
+
+  .modal-title, .card-detail-title {
+    font-size: 16px;
+  }
+
+  .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
 }
