@@ -5,6 +5,7 @@ from models import Complaint, ComplaintEvent, ComplaintAttachment, Employee
 from schemas import ComplaintCreate, ComplaintOut, ComplaintEventOut, AttachmentOut, NotificationOut
 from typing import List, Optional
 from pydantic import BaseModel
+from datetime import datetime, timedelta
 import random, os, shutil
 from auth import get_current_user
 
@@ -211,9 +212,22 @@ def get_attachments(complaint_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/stats")
-def complaint_stats(db: Session = Depends(get_db)):
-    total = db.query(Complaint).count()
-    resolved_complaints = db.query(Complaint).filter(Complaint.status == "Resolved").all()
+def complaint_stats(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+):
+    base_query = db.query(Complaint)
+    if current_user.role == "Employee":
+        base_query = base_query.filter(Complaint.submitted_by == current_user.id)
+    elif current_user.role in ["Infrastructure Head", "Operations Head", "Loans Head", "IT Head", "Hr Head"]:
+        role_to_category = {v: k for k, v in CATEGORY_TO_HEAD_ROLE.items()}
+        category = role_to_category.get(current_user.role)
+        if category:
+            base_query = base_query.filter(Complaint.category == category)
+    # Admin, HR, Super Admin, System Admin see company-wide stats.
+
+    total = base_query.count()
+    resolved_complaints = base_query.filter(Complaint.status == "Resolved").all()
 
     resolved_count = len(resolved_complaints)
     total_days = 0
@@ -237,20 +251,20 @@ def complaint_stats(db: Session = Depends(get_db)):
     sla_compliance = round((within_sla_count / resolved_count) * 100, 1) if resolved_count else 0
 
     return {
-        "open": db.query(Complaint).filter(Complaint.status != "Resolved").count(),
-        "underReview": db.query(Complaint).filter(Complaint.status == "Under Review").count(),
-        "meetingsScheduled": db.query(Complaint).filter(Complaint.status == "Meeting Scheduled").count(),
+        "open": base_query.filter(Complaint.status != "Resolved").count(),
+        "underReview": base_query.filter(Complaint.status == "Under Review").count(),
+        "meetingsScheduled": base_query.filter(Complaint.status == "Meeting Scheduled").count(),
         "resolved": resolved_count,
         "avgResolutionDays": avg_resolution_days,
         "slaCompliance": sla_compliance,
     }
+
+
 @router.get("/notifications/recent", response_model=List[NotificationOut])
 def get_recent_notifications(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    from datetime import timedelta
-
     role = current_user.role
     role_to_category = {v: k for k, v in CATEGORY_TO_HEAD_ROLE.items()}
     result = []
@@ -313,7 +327,6 @@ def get_recent_notifications(
             .limit(20)
             .all()
         )
-        complaint_ids = [e.complaint_id for e in events]
         personal_submitted = (
             db.query(ComplaintEvent)
             .join(Complaint, Complaint.id == ComplaintEvent.complaint_id)

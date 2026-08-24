@@ -15,8 +15,16 @@
 
 * { box-sizing: border-box; }
 
-body { margin: 0; background: var(--bg); color: var(--text); }
+html, body {
+  margin: 0;
+  overflow-x: hidden;
+}
 
+body { background: var(--bg); color: var(--text); }
+
+.app-shell {
+  overflow-x: hidden;
+}
 /* ---------- App shell ---------- */
 .app-shell {
   display: flex;
@@ -2428,6 +2436,7 @@ body { margin: 0; background: var(--bg); color: var(--text); }
   right: 0;
   top: calc(100% + 8px);
   width: 340px;
+  max-width: calc(100vw - 32px);
   max-height: 420px;
   overflow-y: auto;
   background: #fff;
@@ -2744,8 +2753,9 @@ body { margin: 0; background: var(--bg); color: var(--text); }
     grid-template-columns: 1fr;
   }
 
-  .meetings-page {
+   .meetings-page {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .meetings-side-panel {
@@ -2819,7 +2829,18 @@ body { margin: 0; background: var(--bg); color: var(--text); }
     box-sizing: border-box;
   }
 
-  
+     .notif-bell-wrap {
+    position: static;
+  }
+
+  .notif-dropdown {
+    position: fixed;
+    top: 70px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+  }
 }
 /* ===================== Small mobile (≤480px) — tighten further ===================== */
 @media (max-width: 480px) {
