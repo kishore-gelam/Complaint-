@@ -76,10 +76,10 @@ const UpcomingAppointments = () => {
           <div className="appt-list">
             {upcoming.map((m) => (
               <div key={m.id} className="appt-card">
-                <div className="appt-card-top">
+                                <div className="appt-card-top">
                   <span className="appt-time">
                     <i className="fa-regular fa-clock"></i>{' '}
-                    {new Date(m.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(m.start_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, {new Date(m.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                   <span className={`appt-status ${m.status === 'Tentative' ? 'appt-status--tentative' : 'appt-status--scheduled'}`}>
                     {m.status.toUpperCase()}
@@ -94,7 +94,7 @@ const UpcomingAppointments = () => {
           </div>
         )}
 
-        <button className="btn btn--outline meetings-view-all">View Full Schedule</button>
+        
       </div>
 
       <div className="meetings-stats-row">
