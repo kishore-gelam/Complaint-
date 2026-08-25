@@ -60,7 +60,7 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
   };
 
   const submissionAttachments = attachments.filter((a) => a.stage === 'Submitted');
-
+  const isPersonalHiddenFromAdmin = complaint.category === 'Personal' && userRole === 'Admin';
     const resolvedEvent = eventByTitle['Resolved'];
 
   const stages = stageOrder.map((label, index) => {
@@ -170,20 +170,26 @@ const ComplaintDetailModal = ({ open, complaint, onClose, userRole, onUpdated })
                         <div>
                           <p className="card-detail-status-title">{stage.label}</p>
                           <p className="card-detail-status-time">{stage.time}</p>
-                          {stage.note && <p className="timeline-note">{stage.note}</p>}
+                          {!isPersonalHiddenFromAdmin && stage.note && <p className="timeline-note">{stage.note}</p>}
 
-                          {isSubmittedStage && (
-                            <>
-                              <p className="timeline-note" style={{ fontWeight: 700 }}>
-                                {complaint.subject}
+                                                    {isSubmittedStage && (
+                            isPersonalHiddenFromAdmin ? (
+                              <p className="timeline-note" style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>
+                                This is a personal/confidential complaint. Details are restricted.
                               </p>
-                              <p className="timeline-note">
-                                {complaint.description || 'No additional description was provided for this complaint.'}
-                              </p>
-                            </>
+                            ) : (
+                              <>
+                                <p className="timeline-note" style={{ fontWeight: 700 }}>
+                                  {complaint.subject}
+                                </p>
+                                <p className="timeline-note">
+                                  {complaint.description || 'No additional description was provided for this complaint.'}
+                                </p>
+                              </>
+                            )
                           )}
 
-                          {stagePhotos.length > 0 && (
+                          {!isPersonalHiddenFromAdmin && stagePhotos.length > 0 && (
                             <div className="card-detail-evidence-grid" style={{ marginTop: 8 }}>
                               {stagePhotos.map((a) => {
                                 const rawName = decodeURIComponent(a.file_url.split('/').pop());
