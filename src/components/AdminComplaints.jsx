@@ -197,9 +197,14 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {
           </select>
         </div>
 
-        <button
+                <button
           className="btn btn--text"
-          onClick={() => { setCategory('All Categories'); setStatusFilter('All Status'); setDateFrom(''); }}
+          onClick={() => {
+            setCategory('All Categories');
+            setStatusFilter('All Status');
+            setDateFrom('');
+            loadData();
+          }}
         >
           ↺
         </button>
@@ -246,7 +251,7 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {
                     {c.status.toUpperCase()}
                   </span>
                 </td>
-                <td>
+                               <td>
                   <div className="admin-action-group">
                     <button className="icon-btn" aria-label="View" onClick={() => setViewComplaint(mapComplaint(c))}>
                       <i className="fa-solid fa-eye"></i>
@@ -256,7 +261,7 @@ const AdminComplaints = ({ userRole, searchQuery = '' }) => {
                         Manage
                       </button>
                     )}
-                    {c.status !== 'Resolved' && (
+                    {c.category === 'Personal' && c.status !== 'Resolved' && (
                       <button
                         className="icon-btn"
                         aria-label="Schedule Meeting"

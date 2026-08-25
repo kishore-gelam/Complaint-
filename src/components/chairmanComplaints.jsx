@@ -238,9 +238,14 @@ const ChairmanComplaints = ({ searchQuery ='' }) => {
           </button>
         </div>
 
-        <button
+                <button
           className="btn btn--text"
-          onClick={() => { setCategory('All Categories'); setStatusFilter('All Status'); setDateFrom(''); }}
+          onClick={() => {
+            setCategory('All Categories');
+            setStatusFilter('All Status');
+            setDateFrom('');
+            loadData();
+          }}
         >
           ↺
         </button>
