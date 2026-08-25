@@ -127,17 +127,35 @@ const SubmitComplaintModal = ({ open, onClose, onSubmit }) => {
               <span>📷</span> Take Photo
             </button>
 
-            {files.length > 0 && (
-              <ul className="dropzone-file-list">
+                        {files.length > 0 && (
+              <div className="card-detail-evidence-grid" style={{ marginTop: 8, marginBottom: 8 }}>
                 {files.map((f, i) => (
-                  <li key={i}>
-                    {f.name}{' '}
-                    <button type="button" className="btn--text" style={{ padding: '0 4px' }} onClick={() => removeFile(i)}>
+                  <div key={i} style={{ position: 'relative' }}>
+                    <div className="card-detail-evidence-item">
+                      {f.type && f.type.startsWith('image/') ? (
+                        <img src={URL.createObjectURL(f)} alt={f.name} />
+                      ) : (
+                        <div className="evidence-thumb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                          📄
+                        </div>
+                      )}
+                      <span>{f.name}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(i)}
+                      aria-label="Remove file"
+                      style={{
+                        position: 'absolute', top: -6, right: -6, width: 20, height: 20,
+                        borderRadius: '50%', border: 'none', background: '#dc2626', color: '#fff',
+                        fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                    >
                       ✕
                     </button>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
 
             {formError && <p className="login-error" style={{ marginTop: 12 }}>{formError}</p>}
