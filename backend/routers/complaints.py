@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta
 import random, os, shutil
 from auth import get_current_user
+from email_utils import send_email
 
 router = APIRouter(prefix="/api/complaints", tags=["complaints"])
 
@@ -90,6 +91,55 @@ def create_complaint(
         note=f"Complaint submitted by {current_user.name}.",
     ))
     db.commit()
+
+    if current_user.email:
+        send_email(
+            to_email=current_user.email,
+            subject=f"Complaint Submitted — {new_complaint.reference_id}",
+            body_html=f"""
+                <p>Hi {current_user.name},</p>
+                <p>Your complaint has been submitted successfully.</p>
+                <p>
+                    <strong>Reference ID:</strong> {new_complaint.reference_id}<br>
+                    <strong>Title:</strong> {new_complaint.title}<br>
+                    <strong>Category:</strong> {new_complaint.category}
+                </p>
+                <p>You can track its progress from your Complaint Box dashboard.</p>
+            """,
+        )
+
+    # Also notify whoever needs to act next: the department head for this
+    # category, or Admins directly if it's a Personal complaint (which
+    # skips the department-head stage entirely).
+    if new_complaint.category == "Personal":
+        next_action_roles = ["Admin"]
+    else:
+        head_role = CATEGORY_TO_HEAD_ROLE.get(new_complaint.category)
+        next_action_roles = [head_role] if head_role else []
+
+    if next_action_roles:
+        recipients = (
+            db.query(Employee)
+            .filter(Employee.role.in_(next_action_roles))
+            .filter(Employee.email.isnot(None))
+            .all()
+        )
+        for recipient in recipients:
+            send_email(
+                to_email=recipient.email,
+                subject=f"New Complaint Awaiting Your Review — {new_complaint.reference_id}",
+                body_html=f"""
+                    <p>Hi {recipient.name},</p>
+                    <p>A new complaint has been submitted and is awaiting your review.</p>
+                    <p>
+                        <strong>Reference ID:</strong> {new_complaint.reference_id}<br>
+                        <strong>Title:</strong> {new_complaint.title}<br>
+                        <strong>Category:</strong> {new_complaint.category}<br>
+                        <strong>Submitted By:</strong> {current_user.name}
+                    </p>
+                    <p>Please log in to Complaint Box to review and take action.</p>
+                """,
+            )
 
     return new_complaint
 
