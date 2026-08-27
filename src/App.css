@@ -105,7 +105,7 @@ body { background: var(--bg); color: var(--text); }
   display: flex;
   align-items: center;
   gap: 24px;
-  padding: 16px 28px;
+  padding: 17px 28px;
   background: #fff;
   border-bottom: 1px solid var(--border);
 }
