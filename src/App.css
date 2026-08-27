@@ -2880,7 +2880,7 @@ body { background: var(--bg); color: var(--text); }
   .admin-stats-row,
   .exec-stats-row,
   .chairman-stats-row {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 
   .dashboard {
