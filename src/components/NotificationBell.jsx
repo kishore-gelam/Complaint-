@@ -78,7 +78,7 @@ const NotificationBell = ({ userId, onNotificationClick }) => {
   return (
     <div className="notif-bell-wrap" ref={wrapRef}>
       <button className="icon-btn notif-bell-btn" aria-label="Notifications" onClick={toggleOpen}>
-        🔔
+        <i class="fa-regular fa-bell"></i>
         {unreadCount > 0 && <span className="notif-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
       </button>
 
