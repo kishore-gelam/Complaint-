@@ -12,8 +12,7 @@ const getAdminNavItems = (userRole) => [
   {
      key: 'dashboard',
     label: 'Dashboard',
-    icon: 'fa-solid fa-grid-2',
-  },
+icon: 'fa-solid fa-table-cells',  },
   { key: 'complaints', label: 'All Complaints', icon: 'fa-solid fa-clipboard-list' },
   { key: 'meetings', label: 'Meetings', icon: 'fa-solid fa-calendar' },
 ];
