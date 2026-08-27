@@ -71,9 +71,24 @@ def create_complaint(
     # complaints, even via direct API calls (Postman, etc).
     if current_user.role == "Super Admin":
         raise HTTPException(status_code=403, detail="Super Admin cannot submit complaints")
+    
+    # Idempotency guard: if the exact same title+category was submitted by
+    # this user in the last 10 seconds, treat it as a duplicate click rather
+    # than a genuinely new complaint.
+    recent_duplicate = (
+        db.query(Complaint)
+        .filter(Complaint.submitted_by == current_user.id)
+        .filter(Complaint.title == payload.title)
+        .filter(Complaint.category == payload.category)
+        .filter(Complaint.created_at >= datetime.utcnow() - timedelta(seconds=10))
+        .first()
+    )
+    if recent_duplicate:
+        return recent_duplicate
 
     reference_id = f"CB-{random.randint(89000, 89999)}"
     new_complaint = Complaint(
+    
         **payload.dict(exclude={"submitted_by"}),
         reference_id=reference_id,
         submitted_by=current_user.id,

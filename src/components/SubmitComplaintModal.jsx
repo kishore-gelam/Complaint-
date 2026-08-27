@@ -13,6 +13,7 @@ const SubmitComplaintModal = ({ open, onClose, onSubmit }) => {
   const [files, setFiles] = useState([]);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [formError, setFormError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   if (!open) return null;
 
@@ -43,8 +44,14 @@ const SubmitComplaintModal = ({ open, onClose, onSubmit }) => {
     setStep('preview');
   };
 
-  const handleConfirmSubmit = () => {
-    onSubmit && onSubmit({ title, category, urgency, description, files });
+    const handleConfirmSubmit = async () => {
+    if (submitting) return; // guard against double-click firing two submits
+    setSubmitting(true);
+    try {
+      await onSubmit({ title, category, urgency, description, files });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -241,7 +248,9 @@ const SubmitComplaintModal = ({ open, onClose, onSubmit }) => {
 
             <div className="modal-footer">
               <button className="btn btn--outline" onClick={() => setStep('form')}>Edit</button>
-              <button className="btn btn--primary" onClick={handleConfirmSubmit}>Confirm &amp; Submit</button>
+              <button className="btn btn--primary" onClick={handleConfirmSubmit} disabled={submitting}>
+                {submitting ? 'Submitting…' : 'Confirm & Submit'}
+              </button>
             </div>
           </>
         )}

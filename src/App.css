@@ -336,6 +336,11 @@ body { background: var(--bg); color: var(--text); }
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px;
+  overflow-x: auto;
+}
+
+.complaints-table {
+  min-width: 640px;
 }
 
 .table-card-title {
@@ -2594,8 +2599,8 @@ body { background: var(--bg); color: var(--text); }
   display: none;
 }
 
-/* ===================== Mobile responsive (≤768px) ===================== */
-@media (max-width: 768px) {
+/* ===================== Mobile responsive (360px-767px) ===================== */
+@media (max-width: 767px) {
   .app-shell {
     flex-direction: row;
   }
@@ -2730,13 +2735,8 @@ body { background: var(--bg); color: var(--text); }
     width: 100%;
   }
 
-  .table-card {
+   .table-card {
     padding: 14px;
-    overflow-x: auto;
-  }
-
-  .complaints-table {
-    min-width: 640px;
   }
 
   .modal, .card-detail-modal, .resolution-modal, .detail-modal {
@@ -2868,5 +2868,51 @@ body { background: var(--bg); color: var(--text); }
   .btn {
     padding: 8px 12px;
     font-size: 13px;
+  }
+}
+/* ===================== Tablet (768px–1279px) ===================== */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .admin-stats-row,
+  .exec-stats-row,
+  .chairman-stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .dashboard {
+    padding: 18px;
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+
+  .app-header {
+    padding: 14px 18px;
+  }
+
+  .admin-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-detail-grid,
+  .resolution-grid,
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chairman-meetings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===================== Desktop (1280px and wider) ===================== */
+@media (min-width: 1280px) {
+  .sidebar {
+    width: 240px;
   }
 }

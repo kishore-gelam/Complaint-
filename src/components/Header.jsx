@@ -20,6 +20,7 @@ const Header = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const searchInputRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -41,9 +42,17 @@ const Header = ({
       </button>
       <h1 className="app-header-title">{title}</h1>
 
-      <div className="app-header-search">
-        <span className="app-header-search-icon">🔍</span>
+            <div className="app-header-search">
+        <span
+          className="app-header-search-icon"
+          onClick={() => searchInputRef.current && searchInputRef.current.focus()}
+          style={{ cursor: 'pointer' }}
+        >
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+        </span>
         <input
+          ref={searchInputRef}
           type="text"
           placeholder={searchPlaceholder}
           value={searchQuery}
