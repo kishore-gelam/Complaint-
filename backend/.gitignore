@@ -1,5 +1,5 @@
 __pycache__
 .env
 routers/__pycache__
-node_modules
+
 venv/
