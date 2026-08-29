@@ -1,8 +1,11 @@
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from database import Base, engine
 from routers import complaints, meetings, auth, employees
+
+load_dotenv()
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Complaint Box API")
@@ -14,7 +17,9 @@ app.add_middleware(
         "http://localhost:5174",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
-    ],  # <-- ONLY THIS PART CHANGED
+        "https://yourdomain.com",       # production frontend domain add చేయండి
+        "https://www.yourdomain.com",   # www వెర్షన్ కూడా వాడితే
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

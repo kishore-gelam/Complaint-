@@ -14,6 +14,7 @@ router = APIRouter(prefix="/api/complaints", tags=["complaints"])
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 
 class StatusUpdate(BaseModel):
     status: str
@@ -263,7 +264,7 @@ def upload_attachment(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    file_url = f"http://localhost:8000/uploads/{safe_name}"
+    file_url = f"{BASE_URL}/uploads/{safe_name}"
     attachment = ComplaintAttachment(complaint_id=complaint_id, file_url=file_url, stage=stage)
     db.add(attachment)
     db.commit()
