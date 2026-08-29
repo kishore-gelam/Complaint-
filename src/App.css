@@ -1670,7 +1670,11 @@ body { background: var(--bg); color: var(--text); }
 .list-filter { padding: 8px 12px; border: 1px solid #e2e5ec; border-radius: 6px; font-size: 13px; }
 .list-result-count { margin-left: auto; font-size: 12px; color: #9ca3af; }
 
-.list-table-wrap { background: #fff; border-radius: 10px; border: 1px solid #eef0f4; overflow: hidden; }
+.list-table-wrap { background: #fff; border-radius: 10px; border: 1px solid #eef0f4; overflow-x: auto; }
+
+.list-table {
+  min-width: 640px;
+}
 .list-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .list-table th { text-align: left; padding: 12px 16px; color: #9ca3af; font-weight: 500; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #f1f1f1; }
 .list-table td { padding: 12px 16px; border-bottom: 1px solid #f5f6f8; vertical-align: middle; }
@@ -2732,9 +2736,43 @@ body { background: var(--bg); color: var(--text); }
     gap: 16px;
   }
 
-  .stats-grid {
+    .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
+  }
+
+  .admin-stats-row,
+  .admin-stats-row--three,
+  .exec-stats-row,
+  .chairman-stats-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .admin-stat-card {
+    padding: 14px;
+  }
+
+    .admin-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .admin-tab {
+    flex-shrink: 0;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+   .table-card {
+    overflow-x: auto;
+  }
+
+  .table-card table {
+    min-width: 640px;
   }
 
   .stat-card {
@@ -2908,7 +2946,7 @@ body { background: var(--bg); color: var(--text); }
   .admin-stats-row,
   .exec-stats-row,
   .chairman-stats-row {
-    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 
   .dashboard {
@@ -2921,6 +2959,20 @@ body { background: var(--bg); color: var(--text); }
 
   .app-header {
     padding: 14px 18px;
+    gap: 12px;
+  }
+
+  .app-header-title {
+    font-size: 16px;
+  }
+
+  .app-header-search {
+    min-width: 140px;
+    max-width: 260px;
+  }
+
+  .app-header-user-info {
+    display: none;
   }
 
   .admin-dashboard-grid {
