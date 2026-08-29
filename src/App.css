@@ -44,7 +44,7 @@ body { background: var(--bg); color: var(--text); }
 .sidebar {
   width: 240px;
   flex-shrink: 0;
-  background: #1e93e0;
+  background: #0d1b2e;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -75,27 +75,24 @@ body { background: var(--bg); color: var(--text); }
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 12px 20px;
-  margin: 2px 10px;
-  width: calc(100% - 20px);
-  border-radius: 8px;
+  padding: 14px 20px;
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.75);
   font-size: 15px;
   text-align: left;
   cursor: pointer;
-  border-left: none;
+  border-left: 3px solid transparent;
 }
 
 .sidebar-nav-item:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .sidebar-nav-item.is-active {
-  background: #fff;
-  color: #1e93e0;
-  border-left-color: transparent;
+  background: #2f6fed;
+  color: #fff;
+  border-left-color: #fff;
 }
 
 .sidebar-nav-icon { font-size: 16px; }
