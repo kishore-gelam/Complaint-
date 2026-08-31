@@ -145,7 +145,7 @@ body { background: var(--bg); color: var(--text); }
 .icon-btn {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 33px;
   cursor: pointer;
   padding: 6px;
   border-radius: 6px;

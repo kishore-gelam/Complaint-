@@ -62,7 +62,7 @@ const Header = ({
 
             <div className="app-header-actions">
         <NotificationBell userId={userId} onNotificationClick={onNotificationClick} />
-        <button className="icon-btn" aria-label="Settings"></button>
+        
 
                 <div className="app-header-user" ref={menuRef} style={{ position: 'relative' }}>
           <div className="app-header-user-info">
