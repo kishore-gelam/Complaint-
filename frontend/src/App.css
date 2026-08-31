@@ -101,7 +101,7 @@ body { background: var(--bg); color: var(--text); }
 .app-header {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 48px;
   padding: 17px 28px;
   background: #fff;
   border-bottom: 1px solid var(--border);
@@ -121,6 +121,7 @@ body { background: var(--bg); color: var(--text); }
   align-items: center;
   gap: 8px;
   max-width: 420px;
+  margin-right: 40px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -145,7 +146,7 @@ body { background: var(--bg); color: var(--text); }
 .icon-btn {
   background: none;
   border: none;
-  font-size: 33px;
+  font-size: 25px;
   cursor: pointer;
   padding: 6px;
   border-radius: 6px;
@@ -297,24 +298,24 @@ body { background: var(--bg); color: var(--text); }
 
 /* ---------- Complaints toolbar + table ---------- */
 .complaints-toolbar {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
   gap: 16px;
 }
 
 .complaints-toolbar select {
-  padding: 10px 14px;
+  padding: 12px 14px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;
   font-size: 14px;
-  min-width: 180px;
-  max-width: 100%;
-  width: 100%;
+  width: 50%;
   box-sizing: border-box;
 }
 
-.complaints-add-btn { margin-left: auto; }
+
+.complaints-add-btn { width:100%; }
 
 .btn {
   border: none;
@@ -338,12 +339,18 @@ body { background: var(--bg); color: var(--text); }
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 24px;
+  padding: 24px 0;
   overflow-x: auto;
 }
 
 .complaints-table {
   min-width: 640px;
+}
+
+.table-card-title,
+.table-card-header,
+.admin-tabs {
+  padding: 0 24px;
 }
 
 .table-card-title {
@@ -370,6 +377,16 @@ body { background: var(--bg); color: var(--text); }
   padding: 16px 14px;
   border-top: 1px solid var(--border);
   font-size: 14px;
+}
+
+.complaints-table th:first-child,
+.complaints-table td:first-child {
+  padding-left: 24px;
+}
+
+.complaints-table th:last-child,
+.complaints-table td:last-child {
+  padding-right: 24px;
 }
 
 .ref-link { color: var(--blue); text-decoration: none; font-weight: 600; }
