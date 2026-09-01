@@ -17,7 +17,7 @@ icon: 'fa-solid fa-table-cells',  },
   { key: 'meetings', label: 'Meetings', icon: 'fa-solid fa-calendar' },
 ];
 
-const Sidebar = ({ active = 'complaints', onNavigate = () => {}, onLogout = () => {}, userRole, mobileOpen = false, onClose =() =>{} }) => {
+const Sidebar = ({ active = 'complaints', onNavigate = () => {}, onLogout = () => {}, userRole, userName = 'User', mobileOpen = false, onClose =() =>{} }) => {
  const isAdmin = ['Admin', 'Super Admin'].includes(userRole);
   const isSystemAdmin = userRole === 'System Admin';
   const navItems = isSystemAdmin
@@ -67,7 +67,7 @@ const Sidebar = ({ active = 'complaints', onNavigate = () => {}, onLogout = () =
           ))}
         </nav>
 
-        <Footer onLogout={onLogout} />
+        <Footer onLogout={onLogout} userName={userName} userRole={userRole} />
       </aside>
     </>
   );

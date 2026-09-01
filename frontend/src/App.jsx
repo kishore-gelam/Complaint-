@@ -78,6 +78,8 @@ const App = () => {
         onNavigate={setActiveNav}
         onLogout={handleLogout}
         userRole={currentUser.role}
+        userName={currentUser.name}
+
         mobileOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
       />
