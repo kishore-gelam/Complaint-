@@ -2677,7 +2677,7 @@ body { background: var(--bg); color: var(--text); }
 }
 
 /* ===================== Mobile responsive (360px-767px) ===================== */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .app-shell {
     flex-direction: row;
   }
