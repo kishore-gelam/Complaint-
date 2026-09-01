@@ -116,12 +116,12 @@ body { background: var(--bg); color: var(--text); }
 }
 
 .app-header-search {
-  flex: 1;
+  flex: 0 1 380px;
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: 420px;
-  margin-right: 40px;
+  max-width: 380px;
+  margin-left: auto;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -139,8 +139,8 @@ body { background: var(--bg); color: var(--text); }
 .app-header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-left: auto;
+  gap: 16px;
+  margin-left: 16px;
 }
 
 .icon-btn {
@@ -298,10 +298,10 @@ body { background: var(--bg); color: var(--text); }
 
 /* ---------- Complaints toolbar + table ---------- */
 .complaints-toolbar {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
   align-items: stretch;
-  gap: 16px;
+    justify-content: flex-end;
+    gap: 16px;
 }
 
 .complaints-toolbar select {
@@ -310,7 +310,8 @@ body { background: var(--bg); color: var(--text); }
   border: 1px solid var(--border);
   background: #fff;
   font-size: 14px;
-  width: 100%;
+  width: 220px;
+  flex: 0 0 auto;
   box-sizing: border-box;
 }
 
