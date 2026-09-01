@@ -299,7 +299,7 @@ body { background: var(--bg); color: var(--text); }
 /* ---------- Complaints toolbar + table ---------- */
 .complaints-toolbar {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   align-items: stretch;
   gap: 16px;
 }
@@ -310,12 +310,11 @@ body { background: var(--bg); color: var(--text); }
   border: 1px solid var(--border);
   background: #fff;
   font-size: 14px;
-  width: 50%;
+  width: 100%;
   box-sizing: border-box;
 }
 
-
-.complaints-add-btn { width:100%; }
+.complaints-add-btn { white-space: nowrap; }
 
 .btn {
   border: none;
@@ -355,7 +354,7 @@ body { background: var(--bg); color: var(--text); }
 
 .table-card-title {
   font-size: 17px;
-  margin: 0 0 16px;
+  margin: 0;
 }
 
 .complaints-table {
@@ -1361,6 +1360,7 @@ body { background: var(--bg); color: var(--text); }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 16px;
 }
 
 .admin-recent-list {

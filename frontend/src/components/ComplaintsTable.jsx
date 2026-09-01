@@ -49,7 +49,7 @@ const ComplaintsTable = ({
 
   return (
     <section className="complaints-panel">
-      <div className="complaints-toolbar">
+           <div className="complaints-toolbar">
         <select
           value={category}
           onChange={(e) => {
@@ -73,16 +73,17 @@ const ComplaintsTable = ({
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
-
-        {showAddButton && (
-          <button className="btn btn--primary complaints-add-btn" onClick={onAddNew}>
-            + Add New Complaint
-          </button>
-        )}
       </div>
 
       <div className="table-card">
-        <h2 className="table-card-title">Recent Activity</h2>
+        <div className="table-card-header">
+          <h2 className="table-card-title">Recent Activity</h2>
+          {showAddButton && (
+            <button className="btn btn--primary complaints-add-btn" onClick={onAddNew}>
+              + Add New Complaint
+            </button>
+          )}
+        </div>
 
         <table className="complaints-table">
           <thead>
