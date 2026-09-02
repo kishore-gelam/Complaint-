@@ -2844,9 +2844,19 @@ body { background: var(--bg); color: var(--text); }
     min-width: 0;
     width: 100%;
   }
-  .complaints-add-btn {
+    .complaints-add-btn {
     margin-left: 0;
-    width: 100%;
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .table-card-header {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .table-card-title {
+    flex-shrink: 0;
   }
 
    .table-card {
@@ -3008,15 +3018,30 @@ body { background: var(--bg); color: var(--text); }
   .app-header {
     padding: 14px 18px;
     gap: 12px;
+    flex-wrap: nowrap;
+  }
+
+  .app-header-hamburger {
+    display: none;
   }
 
   .app-header-title {
     font-size: 16px;
+    order: initial;
+    flex: initial;
   }
 
   .app-header-search {
     min-width: 140px;
     max-width: 260px;
+    order: initial;
+    flex-basis: auto;
+    margin-left: auto;
+  }
+
+  .app-header-actions {
+    order: initial;
+    margin-left: 12px;
   }
 
   .app-header-user-info {
@@ -3035,6 +3060,20 @@ body { background: var(--bg); color: var(--text); }
 
   .chairman-meetings-grid {
     grid-template-columns: 1fr;
+  }
+    .table-card-header {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .table-card-title {
+    flex-shrink: 0;
+  }
+
+  .complaints-add-btn {
+    flex-shrink: 0;
+    width: auto;
+    white-space: nowrap;
   }
 }
 
