@@ -2660,8 +2660,10 @@ body { background: var(--bg); color: var(--text); }
   background: #fef2f2;
 }
 
-/* ===================== Mobile hamburger + drawer sidebar (base, hidden by default) ===================== */
-
+/* =========================================================================
+   BASE (desktop defaults — sidebar fixed, no hamburger)
+   Overridden below for screens up to 1024px.
+   ========================================================================= */
 .app-header-hamburger {
   display: none;
   background: none;
@@ -2677,11 +2679,13 @@ body { background: var(--bg); color: var(--text); }
 }
 
 /* =========================================================================
-   SHARED: MOBILE + TABLET (up to 1279px)
-   Hamburger + off-canvas drawer sidebar apply here.
-   Desktop (1280px+) gets the fixed, always-visible sidebar instead.
+   SHARED STRUCTURE — MOBILE + TABLET (up to 1024px)
+   Hamburger + off-canvas drawer sidebar. Written ONCE here so mobile and
+   tablet never fall out of sync. Header CONTENT (title shown/hidden,
+   search width) still differs between mobile and tablet — that's handled
+   in their separate blocks below, not here.
    ========================================================================= */
-@media (max-width: 1279px) {
+@media (max-width: 1024px) {
   .app-shell {
     flex-direction: row;
   }
@@ -2692,7 +2696,6 @@ body { background: var(--bg); color: var(--text); }
     order: 1;
   }
 
-  /* ---- Sidebar becomes an off-canvas drawer ---- */
   .sidebar {
     position: fixed;
     top: 0;
@@ -2747,32 +2750,8 @@ body { background: var(--bg); color: var(--text); }
     z-index: 150;
   }
 
-  /* ---- Header ---- */
   .app-header {
-    flex-wrap: wrap;
-    gap: 8px 10px;
-    padding: 10px 14px;
-    row-gap: 8px;
-  }
-
-  .app-header-title {
-    order: 2;
-    font-size: 15px;
-    white-space: normal;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .app-header-actions {
-    order: 3;
-    margin-left: auto;
-  }
-
-  .app-header-search {
-    order: 4;
-    max-width: 100%;
-    width: 100%;
-    flex-basis: 100%;
+    flex-wrap: nowrap;
   }
 
   .app-header-user-info {
@@ -2793,17 +2772,41 @@ body { background: var(--bg); color: var(--text); }
   }
 }
 
-/* ===================== Mobile-only fine tuning (≤768px) ===================== */
-@media (max-width: 768px) {
-  /* ---- Dashboard / cards / tables / modals ---- */
-  .dashboard {
-    padding: 14px;
-    gap: 16px;
+/* =========================================================================
+   MOBILE — header content + layout (320px–767px)
+   ========================================================================= */
+@media (max-width: 767px) {
+  .app-header {
+    gap: 8px 10px;
+    padding: 10px 14px;
+  }
+
+  .app-header-title {
+    display: none;
+  }
+
+  .app-header-search {
+    order: 2;
+    flex: 1 1 auto;
+    flex-basis: auto;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .app-header-search input {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .app-header-actions {
+    order: 3;
+    flex-shrink: 0;
+    margin-left: 0;
   }
 
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
   }
 
   .admin-stats-row,
@@ -2812,10 +2815,6 @@ body { background: var(--bg); color: var(--text); }
   .chairman-stats-row {
     grid-template-columns: 1fr !important;
     gap: 12px;
-  }
-
-  .admin-stat-card {
-    padding: 14px;
   }
 
   .admin-tabs {
@@ -2828,8 +2827,6 @@ body { background: var(--bg); color: var(--text); }
 
   .admin-tab {
     flex-shrink: 0;
-    padding: 10px 12px;
-    font-size: 13px;
   }
 
   .table-card {
@@ -2840,44 +2837,44 @@ body { background: var(--bg); color: var(--text); }
     min-width: 640px;
   }
 
-  .stat-card {
-    padding: 14px;
-  }
-
-  .stat-card-value {
-    font-size: 22px;
-  }
-
-  .stat-card-label {
-    font-size: 11px;
-  }
-
   .complaints-toolbar {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
+
   .complaints-toolbar select {
     min-width: 0;
     width: 100%;
-  }
-  .complaints-add-btn {
-    margin-left: 0;
-    width: auto;
-    white-space: nowrap;
+    height: 42px;
+    box-sizing: border-box;
   }
 
   .table-card-header {
-    align-items: flex-start;
-    gap: 16px;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-right: 0;
+  }
+
+  .table-card-title {
+    margin-right: auto;
   }
 
   .table-card-title {
     flex-shrink: 0;
+    font-size: 15px;
   }
 
-  .table-card {
-    padding: 14px;
+  .complaints-add-btn {
+    margin-left: auto;
+    width: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 8px 12px;
+    font-size: 12px;
   }
 
   .modal, .card-detail-modal, .resolution-modal, .detail-modal {
@@ -2965,49 +2962,76 @@ body { background: var(--bg); color: var(--text); }
   .day-hour-label {
     font-size: 10px;
   }
+}
 
-  /* ---- Header: drop the title, search bar takes its place in the row ---- */
-  .app-header-title {
-    display: none;
+/* =========================================================================
+   MOBILE SUB-TIERS — cosmetic sizing only (no structural rules here)
+   ========================================================================= */
+
+/* Mobile Small: 320px–374px */
+@media (max-width: 374px) {
+  .dashboard {
+    padding: 10px;
+    gap: 12px;
   }
 
-    .app-header {
-    flex-wrap: nowrap;
+  .stats-grid {
+    gap: 8px;
   }
 
-  .app-header-search {
-    order: 2;
-    flex: 1 1 auto;
-    flex-basis: auto;
-    width: auto;
-    max-width: none;
-    min-width: 0;
+  .stat-card,
+  .admin-stat-card {
+    padding: 10px;
   }
 
-  .app-header-search input {
-    min-width: 0;
-    width: 100%;
+  .stat-card-value,
+  .admin-stat-value,
+  .exec-stat-value {
+    font-size: 16px;
   }
 
-  .app-header-actions {
-    order: 3;
-    flex-shrink: 0;
+  .stat-card-label {
+    font-size: 9px;
+  }
+
+  .admin-tab {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .table-card {
+    padding: 10px;
+  }
+
+  .modal-title, .card-detail-title {
+    font-size: 15px;
+  }
+
+  .btn {
+    padding: 7px 10px;
+    font-size: 12px;
   }
 }
 
-/* ===================== Small mobile (≤480px) — tighten further ===================== */
-@media (max-width: 480px) {
-  /* 2-up status cards, not 1-up */
+/* Mobile Medium: 375px–424px */
+@media (min-width: 375px) and (max-width: 424px) {
+  .dashboard {
+    padding: 12px;
+    gap: 14px;
+  }
+
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
 
-  .stat-card {
+  .stat-card,
+  .admin-stat-card {
     padding: 12px;
   }
 
-  .stat-card-value {
+  .stat-card-value,
+  .admin-stat-value,
+  .exec-stat-value {
     font-size: 18px;
   }
 
@@ -3015,13 +3039,58 @@ body { background: var(--bg); color: var(--text); }
     font-size: 10px;
   }
 
-  .sidebar-brand-text {
-    font-size: 14px;
+  .admin-tab {
+    padding: 9px 11px;
+    font-size: 12.5px;
   }
 
+  .table-card {
+    padding: 12px;
+  }
+
+  .modal-title, .card-detail-title {
+    font-size: 16px;
+  }
+
+  .btn {
+    padding: 8px 11px;
+    font-size: 12.5px;
+  }
+}
+
+/* Mobile Large: 425px–767px */
+@media (min-width: 425px) and (max-width: 767px) {
+  .dashboard {
+    padding: 14px;
+    gap: 16px;
+  }
+
+  .stats-grid {
+    gap: 12px;
+  }
+
+  .stat-card,
+  .admin-stat-card {
+    padding: 14px;
+  }
+
+  .stat-card-value,
   .admin-stat-value,
   .exec-stat-value {
-    font-size: 20px;
+    font-size: 22px;
+  }
+
+  .stat-card-label {
+    font-size: 11px;
+  }
+
+  .admin-tab {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .table-card {
+    padding: 14px;
   }
 
   .modal-title, .card-detail-title {
@@ -3034,8 +3103,42 @@ body { background: var(--bg); color: var(--text); }
   }
 }
 
-/* ===================== Tablet (768px–1279px) — grid / layout tweaks only ===================== */
-@media (min-width: 768px) and (max-width: 1279px) {
+/* =========================================================================
+   TABLET (768px–1024px)
+   Sidebar/hamburger structure comes from the shared ≤1024px block above.
+   This block only handles header CONTENT (title stays visible, unlike
+   mobile) and tablet-specific grid sizing.
+   ========================================================================= */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .app-header {
+    padding: 14px 18px;
+    gap: 12px;
+  }
+
+  .app-header-title {
+    display: block;
+    font-size: 16px;
+    order: 2;
+  }
+
+  .app-header-search {
+    order: 3;
+    flex-basis: auto;
+    min-width: 140px;
+    max-width: 260px;
+    margin-left: auto;
+  }
+
+  .app-header-actions {
+    order: 4;
+    margin-left: 12px;
+    flex-shrink: 0;
+  }
+
+  .dashboard {
+    padding: 18px;
+  }
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
@@ -3047,20 +3150,10 @@ body { background: var(--bg); color: var(--text); }
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
-  .dashboard {
-    padding: 18px;
-  }
-
-  .admin-dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
+  .admin-dashboard-grid,
   .card-detail-grid,
   .resolution-grid,
-  .modal-grid {
-    grid-template-columns: 1fr;
-  }
-
+  .modal-grid,
   .chairman-meetings-grid {
     grid-template-columns: 1fr;
   }
@@ -3081,11 +3174,29 @@ body { background: var(--bg); color: var(--text); }
   }
 }
 
-/* ===================== Desktop (1280px and wider) ===================== */
-@media (min-width: 1280px) {
+/* =========================================================================
+   DESKTOP NORMAL (1025px–1439px)
+   Fixed, always-visible sidebar returns here. No hamburger.
+   ========================================================================= */
+@media (min-width: 1025px) and (max-width: 1439px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .dashboard {
+    padding: 24px;
+  }
+}
+
+/* =========================================================================
+   DESKTOP LARGE (1440px+)
+   ========================================================================= */
+@media (min-width: 1440px) {
   .sidebar {
     width: 240px;
-    /* fixed, always-visible sidebar — hamburger and drawer rules
-       from the 1279px block above simply don't apply here */
+  }
+
+  .dashboard {
+    padding: 32px;
   }
 }
