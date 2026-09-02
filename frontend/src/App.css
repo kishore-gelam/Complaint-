@@ -2660,7 +2660,7 @@ body { background: var(--bg); color: var(--text); }
   background: #fef2f2;
 }
 
-/* ===================== Mobile hamburger + drawer sidebar ===================== */
+/* ===================== Mobile hamburger + drawer sidebar (base, hidden by default) ===================== */
 
 .app-header-hamburger {
   display: none;
@@ -2676,8 +2676,12 @@ body { background: var(--bg); color: var(--text); }
   display: none;
 }
 
-/* ===================== Mobile responsive (360px-767px) ===================== */
-@media (max-width: 768px) {
+/* =========================================================================
+   SHARED: MOBILE + TABLET (up to 1279px)
+   Hamburger + off-canvas drawer sidebar apply here.
+   Desktop (1280px+) gets the fixed, always-visible sidebar instead.
+   ========================================================================= */
+@media (max-width: 1279px) {
   .app-shell {
     flex-direction: row;
   }
@@ -2685,6 +2689,7 @@ body { background: var(--bg); color: var(--text); }
   .app-header-hamburger {
     display: inline-flex;
     align-items: center;
+    order: 1;
   }
 
   /* ---- Sidebar becomes an off-canvas drawer ---- */
@@ -2743,15 +2748,11 @@ body { background: var(--bg); color: var(--text); }
   }
 
   /* ---- Header ---- */
-    .app-header {
+  .app-header {
     flex-wrap: wrap;
     gap: 8px 10px;
     padding: 10px 14px;
     row-gap: 8px;
-  }
-
-  .app-header-hamburger {
-    order: 1;
   }
 
   .app-header-title {
@@ -2778,13 +2779,29 @@ body { background: var(--bg); color: var(--text); }
     display: none;
   }
 
+  .notif-bell-wrap {
+    position: static;
+  }
+
+  .notif-dropdown {
+    position: fixed;
+    top: 70px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ===================== Mobile-only fine tuning (≤768px) ===================== */
+@media (max-width: 768px) {
   /* ---- Dashboard / cards / tables / modals ---- */
   .dashboard {
     padding: 14px;
     gap: 16px;
   }
 
-    .stats-grid {
+  .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
@@ -2801,7 +2818,7 @@ body { background: var(--bg); color: var(--text); }
     padding: 14px;
   }
 
-    .admin-tabs {
+  .admin-tabs {
     overflow-x: auto;
     flex-wrap: nowrap;
     white-space: nowrap;
@@ -2815,7 +2832,7 @@ body { background: var(--bg); color: var(--text); }
     font-size: 13px;
   }
 
-   .table-card {
+  .table-card {
     overflow-x: auto;
   }
 
@@ -2844,7 +2861,7 @@ body { background: var(--bg); color: var(--text); }
     min-width: 0;
     width: 100%;
   }
-    .complaints-add-btn {
+  .complaints-add-btn {
     margin-left: 0;
     width: auto;
     white-space: nowrap;
@@ -2859,7 +2876,7 @@ body { background: var(--bg); color: var(--text); }
     flex-shrink: 0;
   }
 
-   .table-card {
+  .table-card {
     padding: 14px;
   }
 
@@ -2877,20 +2894,21 @@ body { background: var(--bg); color: var(--text); }
     grid-template-columns: 1fr;
   }
 
-   .meetings-page {
+  .meetings-page {
     flex-direction: column;
     align-items: stretch;
+    padding: 12px;
   }
 
   .meetings-side-panel {
     width: 100%;
   }
-    .meetings-page {
-    padding: 12px;
-  }
 
   .calendar-panel {
     padding: 8px;
+    overflow-x: auto;
+    padding-right: 12px;
+    box-sizing: border-box;
   }
 
   .calendar-grid-head-cell {
@@ -2916,7 +2934,8 @@ body { background: var(--bg); color: var(--text); }
     gap: 10px;
     padding: 12px 14px;
   }
-    .week-view-head,
+
+  .week-view-head,
   .week-view-body {
     grid-template-columns: 50px repeat(7, minmax(60px, 1fr));
   }
@@ -2947,33 +2966,53 @@ body { background: var(--bg); color: var(--text); }
     font-size: 10px;
   }
 
-  .calendar-panel {
-    overflow-x: auto;
-    padding-right: 12px;
-    box-sizing: border-box;
+  /* ---- Header: drop the title, search bar takes its place in the row ---- */
+  .app-header-title {
+    display: none;
   }
 
-     .notif-bell-wrap {
-    position: static;
+    .app-header {
+    flex-wrap: nowrap;
   }
 
-  .notif-dropdown {
-    position: fixed;
-    top: 70px;
-    left: 12px;
-    right: 12px;
+  .app-header-search {
+    order: 2;
+    flex: 1 1 auto;
+    flex-basis: auto;
     width: auto;
     max-width: none;
-  }
-}
-/* ===================== Small mobile (≤480px) — tighten further ===================== */
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
+    min-width: 0;
   }
 
-  .app-header-title {
-    font-size: 14px;
+  .app-header-search input {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .app-header-actions {
+    order: 3;
+    flex-shrink: 0;
+  }
+}
+
+/* ===================== Small mobile (≤480px) — tighten further ===================== */
+@media (max-width: 480px) {
+  /* 2-up status cards, not 1-up */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 12px;
+  }
+
+  .stat-card-value {
+    font-size: 18px;
+  }
+
+  .stat-card-label {
+    font-size: 10px;
   }
 
   .sidebar-brand-text {
@@ -2994,7 +3033,8 @@ body { background: var(--bg); color: var(--text); }
     font-size: 13px;
   }
 }
-/* ===================== Tablet (768px–1279px) ===================== */
+
+/* ===================== Tablet (768px–1279px) — grid / layout tweaks only ===================== */
 @media (min-width: 768px) and (max-width: 1279px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -3011,43 +3051,6 @@ body { background: var(--bg); color: var(--text); }
     padding: 18px;
   }
 
-  .sidebar {
-    width: 200px;
-  }
-
-  .app-header {
-    padding: 14px 18px;
-    gap: 12px;
-    flex-wrap: nowrap;
-  }
-
-  .app-header-hamburger {
-    display: none;
-  }
-
-  .app-header-title {
-    font-size: 16px;
-    order: initial;
-    flex: initial;
-  }
-
-  .app-header-search {
-    min-width: 140px;
-    max-width: 260px;
-    order: initial;
-    flex-basis: auto;
-    margin-left: auto;
-  }
-
-  .app-header-actions {
-    order: initial;
-    margin-left: 12px;
-  }
-
-  .app-header-user-info {
-    display: none;
-  }
-
   .admin-dashboard-grid {
     grid-template-columns: 1fr;
   }
@@ -3061,7 +3064,8 @@ body { background: var(--bg); color: var(--text); }
   .chairman-meetings-grid {
     grid-template-columns: 1fr;
   }
-    .table-card-header {
+
+  .table-card-header {
     align-items: flex-start;
     gap: 16px;
   }
@@ -3081,5 +3085,7 @@ body { background: var(--bg); color: var(--text); }
 @media (min-width: 1280px) {
   .sidebar {
     width: 240px;
+    /* fixed, always-visible sidebar — hamburger and drawer rules
+       from the 1279px block above simply don't apply here */
   }
 }
