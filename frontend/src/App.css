@@ -3074,10 +3074,38 @@ body { background: var(--bg); color: var(--text); }
     padding: 14px;
   }
 
-  .stat-card-value,
+  .admin-stats-row,
+  .admin-stats-row--three,
+  .exec-stats-row,
+  .chairman-stats-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px;
+  }
+
+  .admin-stat-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .admin-stat-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .admin-stat-label {
+    font-size: 9px;
+  }
+
+  .stat-card-value {
+    font-size: 22px;
+  }
+
   .admin-stat-value,
   .exec-stat-value {
-    font-size: 22px;
+    font-size: 16px;
   }
 
   .stat-card-label {
