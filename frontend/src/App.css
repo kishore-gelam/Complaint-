@@ -3011,6 +3011,10 @@ body { background: var(--bg); color: var(--text); }
     padding: 7px 10px;
     font-size: 12px;
   }
+  .chairman-meetings-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 /* Mobile Medium: 375px–424px */
@@ -3055,6 +3059,10 @@ body { background: var(--bg); color: var(--text); }
   .btn {
     padding: 8px 11px;
     font-size: 12.5px;
+  }
+    .chairman-meetings-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 
@@ -3129,8 +3137,11 @@ body { background: var(--bg); color: var(--text); }
     padding: 8px 12px;
     font-size: 13px;
   }
-}
 
+  .chairman-meetings-grid {
+    grid-template-columns: 1fr;
+  }
+}
 /* =========================================================================
    TABLET (768px–1024px)
    Sidebar/hamburger structure comes from the shared ≤1024px block above.
@@ -3219,6 +3230,26 @@ body { background: var(--bg); color: var(--text); }
     flex-shrink: 0;
     width: auto;
     white-space: nowrap;
+  }
+    .table-card {
+    padding: 16px;
+  }
+
+  .exec-stat-card,
+  .volume-list,
+  .meetings-side-card,
+  .card-detail-card,
+  .admin-stat-card {
+    padding: 16px;
+  }
+
+  .card-detail-header,
+  .card-detail-grid {
+    padding: 16px;
+  }
+
+  .volume-row-top {
+    font-size: 12px;
   }
 }
 
