@@ -380,9 +380,16 @@ body { background: var(--bg); color: var(--text); }
 .table-card-title,
 .table-card-header,
 .admin-tabs,
-.volume-list {
+.volume-list,
+.chairman-meetings-toolbar,
+.agenda-list {
   padding: 0 24px;
   box-sizing: border-box;
+}
+
+.deadline-card {
+  margin-left: 24px;
+  margin-right: 24px;
 }
 
 .table-card-title {
@@ -980,6 +987,7 @@ body { background: var(--bg); color: var(--text); }
   align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
+  padding-top: 4px;
 }
 
 .meetings-side-header h3 { margin: 0; font-size: 15px; }
