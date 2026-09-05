@@ -379,8 +379,10 @@ body { background: var(--bg); color: var(--text); }
 
 .table-card-title,
 .table-card-header,
-.admin-tabs {
+.admin-tabs,
+.volume-list {
   padding: 0 24px;
+  box-sizing: border-box;
 }
 
 .table-card-title {
