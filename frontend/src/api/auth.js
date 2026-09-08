@@ -29,3 +29,15 @@ export function clearSession() {
   localStorage.removeItem('cb_token');
   localStorage.removeItem('cb_user');
 }
+export async function signup(name, email, password, role = 'Employee', department = null) {
+  const res = await fetch(`${BASE_URL}/api/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password, role, department }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Signup failed');
+  }
+  return res.json(); // { access_token, token_type, user }
+}

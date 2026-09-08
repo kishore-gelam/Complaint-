@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { login, saveSession } from '../api/auth';
 
-const LoginPage = ({ onLoginSuccess }) => {
-  const [email, setEmail] = useState('');
+const LoginPage = ({ onLoginSuccess, onSwitchToSignup }) => {
+    const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -69,6 +69,12 @@ const LoginPage = ({ onLoginSuccess }) => {
         <button className="btn btn--primary login-submit" type="submit" disabled={loading}>
           {loading ? 'Signing in…' : 'Sign In'}
         </button>
+                <p className="login-subtitle" style={{ marginTop: '12px' }}>
+          Don't have an account?{' '}
+          <span style={{ color: '#1e93e0', cursor: 'pointer' }} onClick={onSwitchToSignup}>
+            Sign up
+          </span>
+        </p>
       </form>
     </div>
   );

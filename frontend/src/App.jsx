@@ -13,6 +13,7 @@ import ChairmanMeetings from './components/ChairmanMeetings';
 import ChairmanComplaints from './components/ChairmanComplaints';
 import './App.css';
 import SystemAdminEmployees from './components/SystemAdminEmployees';
+import SignupPage from './components/SignupPage';
 import './components/SystemAdminEmployees.css';
 
 const getPageTitle = (nav, role) => {
@@ -37,7 +38,8 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const[searchQuery, setSearchQuery] = useState('');
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);   
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);  
+  const [authView, setAuthView] = useState('login'); // 'login' | 'signup' 
 
   useEffect(() => {
     const session = getSession();
@@ -65,8 +67,18 @@ const App = () => {
 
   if (checkingSession) return null; // avoid a login-page flash on refresh
 
-  if (!currentUser) {
-    return <LoginPage onLoginSuccess={setCurrentUser} />;
+    if (!currentUser) {
+    return authView === 'signup' ? (
+      <SignupPage
+        onSignupSuccess={setCurrentUser}
+        onSwitchToLogin={() => setAuthView('login')}
+      />
+    ) : (
+      <LoginPage
+        onLoginSuccess={setCurrentUser}
+        onSwitchToSignup={() => setAuthView('signup')}
+      />
+    );
   }
 
   const isAdmin = ['Admin', 'Super Admin'].includes(currentUser.role);
@@ -123,7 +135,7 @@ const App = () => {
 
                {activeNav === 'employees' && currentUser.role === 'System Admin' && (
           <SystemAdminEmployees searchQuery={searchQuery} />
-        )}
+                        )}
       </div>
     </div>
   );
