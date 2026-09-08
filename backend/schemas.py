@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
 
@@ -92,7 +92,12 @@ class EmployeeUpdate(BaseModel):
 class EmployeeListOut(BaseModel):
     items: List[EmployeeOut]
     total: int
-
+class EmployeeSignup(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+    role: str = "Employee"
+    department: str | None = None
 
 # ---------- Meetings ----------
 
