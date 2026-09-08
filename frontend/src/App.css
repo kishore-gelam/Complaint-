@@ -2839,8 +2839,10 @@ body { background: var(--bg); color: var(--text); }
     flex-shrink: 0;
   }
 
-  .table-card {
+   .table-card {
     overflow-x: auto;
+    overflow-y: auto;
+    max-height: 70vh;
   }
 
   .table-card table {
@@ -2860,13 +2862,22 @@ body { background: var(--bg); color: var(--text); }
     box-sizing: border-box;
   }
 
-  .table-card-header {
+    .table-card-header {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-end;
     gap: 8px;
     padding-right: 0;
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background: #fff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: max-content;
+    min-width: 100%;
   }
 
   .table-card-title {
