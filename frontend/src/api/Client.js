@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'https://complaint-u2n7.onrender.com';
 
 export async function apiGet(path) {
   const res = await fetch(`${BASE_URL}${path}`);

@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/complaints", tags=["complaints"])
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
+BASE_URL = os.getenv("BASE_URL", "https://complaint-u2n7.onrender.com")
 
 class StatusUpdate(BaseModel):
     status: str

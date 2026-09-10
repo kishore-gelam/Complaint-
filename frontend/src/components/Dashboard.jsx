@@ -45,7 +45,7 @@ const Dashboard = ({ userRole, searchQuery ='' }) => {
       setComplaints(mapped);
       setStats(statsData);
     } catch (err) {
-      setError('Could not load complaints. Is the backend running on port 8000?');
+      setError('Could not load dashboard data. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }

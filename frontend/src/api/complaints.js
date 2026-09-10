@@ -1,6 +1,6 @@
 import { getSession } from './auth';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'https://complaint-u2n7.onrender.com';
 
 function authHeaders() {
   const session = getSession();

@@ -31,7 +31,7 @@ const AdminDashboard = ({ userRole, onViewAllComplaints }) => {
         setStats(statsData);
         setMeetings(meetingsData);
       } catch (err) {
-        setError('Could not load dashboard data. Is the backend running on port 8000?');
+        setError('Could not load dashboard data. Please check your connection and try again.');
       } finally {
         setLoading(false);
       }
