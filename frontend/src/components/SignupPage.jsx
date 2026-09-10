@@ -76,6 +76,7 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
         >
           <option value="employee">Employee</option>
           <option value="admin">Admin</option>
+          <option value="systemadmin">System Admin</option>
         </select>
 
         <button className="btn btn--primary login-submit" type="submit" disabled={loading}>
