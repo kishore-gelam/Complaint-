@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signup, saveSession } from '../api/auth';
+import { signup } from '../api/auth';
 
 const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
   const [name, setName] = useState('');
@@ -7,16 +7,18 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('employee');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
     try {
-      const data = await signup(name, email, password, role);
-      saveSession(data.access_token, data.user);
-      onSignupSuccess(data.user);
+      await signup(name, email, password, role);
+      setSuccess('Account created! Please sign in.');
+      setTimeout(() => onSwitchToLogin(), 1200);
     } catch (err) {
       setError(err.message || 'Signup failed.');
     } finally {
@@ -36,6 +38,7 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
         <p className="login-subtitle">Sign up to get started.</p>
 
         {error && <p className="login-error">{error}</p>}
+        {success && <p className="login-success">{success}</p>}
 
         <label className="field-label">Name</label>
         <input
