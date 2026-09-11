@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import NotificationBell from './NotificationBell';
 
 const ROLE_DISPLAY_LABELS = {
@@ -18,19 +18,8 @@ const Header = ({
   onLogout = () => {},
   onMenuClick = () => {},
 }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
   const searchInputRef = useRef(null);
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
   return (
     <header className="app-header">
       <button
@@ -64,36 +53,20 @@ const Header = ({
         <NotificationBell userId={userId} onNotificationClick={onNotificationClick} />
         
 
-                <div className="app-header-user" ref={menuRef} style={{ position: 'relative' }}>
+                <div className="app-header-user">
           <div className="app-header-user-info">
             <span className="app-header-user-name">{userName}</span>
             <span className="app-header-user-role">
               {ROLE_DISPLAY_LABELS[userRole] || userRole}
             </span>
           </div>
-          <div
-            className="app-header-avatar"
-            onClick={() => setMenuOpen((v) => !v)}
-            style={{ cursor: 'pointer' }}
-          >
+          <div className="app-header-avatar">
             {avatarUrl ? (
               <img src={avatarUrl} alt={userName} />
             ) : (
               <span>{userName.charAt(0)}</span>
             )}
           </div>
-
-          {menuOpen && (
-            <div className="user-menu-dropdown">
-              <div className="user-menu-info">
-                <span className="user-menu-name">{userName}</span>
-                <span className="user-menu-role">{ROLE_DISPLAY_LABELS[userRole] || userRole}</span>
-              </div>
-              <button className="user-menu-item" onClick={onLogout}>
-                <i className="fa-solid fa-arrow-right-from-bracket"></i> Logout
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </header>
