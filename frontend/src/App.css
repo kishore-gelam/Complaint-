@@ -49,6 +49,7 @@ body { background: var(--bg); color: var(--text); }
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   overflow-y: auto;
 }
 
@@ -2711,6 +2712,7 @@ body { background: var(--bg); color: var(--text); }
     top: 0;
     left: 0;
     height: 100vh;
+    height: 100dvh;
     width: 260px;
     z-index: 200;
     transform: translateX(-100%);
