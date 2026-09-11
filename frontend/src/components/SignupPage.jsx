@@ -5,7 +5,7 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('employee');
+  const [role, setRole] = useState('Employee');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -77,9 +77,9 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
           onChange={(e) => setRole(e.target.value)}
           required
         >
-          <option value="employee">Employee</option>
-          <option value="admin">Admin</option>
-          <option value="systemadmin">System Admin</option>
+          <option value="Employee">Employee</option>
+          <option value="Admin">Admin</option>
+          <option value="System Admin">System Admin</option>
         </select>
 
         <button className="btn btn--primary login-submit" type="submit" disabled={loading}>
