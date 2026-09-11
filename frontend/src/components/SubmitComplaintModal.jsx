@@ -77,7 +77,7 @@ const SubmitComplaintModal = ({ open, onClose, onSubmit }) => {
             <input
               type="text"
               className="field-input"
-              placeholder="e.g., Harassment incident in Department B"
+             placeholder="e.g., Delayed loan disbursement issue"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
