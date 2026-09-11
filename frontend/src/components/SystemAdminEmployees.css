@@ -191,3 +191,24 @@
   background: #f1f5f9;
   color: #64748b;
 }
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap input {
+  padding-right: 40px;
+}
+
+.password-toggle-eye {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.password-toggle-eye:hover {
+  color: #475569;
+}

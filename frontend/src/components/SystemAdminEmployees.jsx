@@ -28,6 +28,7 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
     employee_code: '',
@@ -243,15 +244,23 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                 required
               />
 
-              <label>Password {editingId && <span className="field-hint">(leave blank to keep unchanged)</span>}</label>
-              <input
-                type="password"
-                name="employee_password"
-                autoComplete="new-password"
-                value={form.password}
-                onChange={handleChange}
-                required={!editingId}
-              />
+                           <label>Password {editingId && <span className="field-hint">(leave blank to keep unchanged)</span>}</label>
+              <div className="password-input-wrap">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="employee_password"
+                  autoComplete="new-password"
+                  value={form.password}
+                  onChange={handleChange}
+                  required={!editingId}
+                />
+                <span
+                  className="password-toggle-eye"
+                  onClick={() => setShowPassword((v) => !v)}
+                >
+                  <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </span>
+              </div>
 
               <label>Department Name</label>
               <select name="department" value={form.department} onChange={handleChange}>
