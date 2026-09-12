@@ -5,7 +5,6 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('Employee');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,7 +15,7 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
     setSuccess('');
     setLoading(true);
     try {
-      await signup(name, email, password, role);
+      await signup(name, email, password, 'System Admin');
       setSuccess('Account created! Please sign in.');
       setTimeout(() => onSwitchToLogin(), 1200);
     } catch (err) {
@@ -34,7 +33,7 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
           <span>Complaint Box</span>
         </div>
 
-        <h2 className="login-title">Create Account</h2>
+        <h2 className="login-title">Create System Admin Account</h2>
         <p className="login-subtitle">Sign up to get started.</p>
 
         {error && <p className="login-error">{error}</p>}
@@ -69,18 +68,6 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-
-        <label className="field-label">Role</label>
-        <select
-          className="field-input"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          required
-        >
-          <option value="Employee">Employee</option>
-          <option value="Admin">Admin</option>
-          <option value="System Admin">System Admin</option>
-        </select>
 
         <button className="btn btn--primary login-submit" type="submit" disabled={loading}>
           {loading ? 'Creating account…' : 'Sign Up'}
