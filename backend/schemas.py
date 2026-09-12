@@ -75,7 +75,7 @@ class EmployeeCreate(BaseModel):
     employee_code: str
     name: str
     email: str
-    password: str
+    password: Optional[str] = None
     role: str = "Employee"
     department: Optional[str] = None
 
@@ -96,8 +96,6 @@ class EmployeeSignup(BaseModel):
     name: str
     email: EmailStr
     password: str
-    role: str = "Employee"
-    department: str | None = None
 
 # ---------- Meetings ----------
 
