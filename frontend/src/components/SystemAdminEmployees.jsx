@@ -244,7 +244,7 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                 required
               />
 
-                           <label>Password {editingId && <span className="field-hint">(leave blank to keep unchanged)</span>}</label>
+                           <label>Password <span className="field-hint">(optional — leave blank to let employee set it via Signup)</span></label>
               <div className="password-input-wrap">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -252,7 +252,6 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                   autoComplete="new-password"
                   value={form.password}
                   onChange={handleChange}
-                  required={!editingId}
                 />
                 <span
                   className="password-toggle-eye"
