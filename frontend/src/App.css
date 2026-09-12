@@ -335,6 +335,7 @@ body { background: var(--bg); color: var(--text); }
   align-items: stretch;
     justify-content: flex-end;
     gap: 16px;
+    margin-bottom: 20px;
 }
 
 .complaints-toolbar select {
