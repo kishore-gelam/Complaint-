@@ -11,7 +11,7 @@ const ROLE_OPTIONS = [
   'Admin',
   'HR',
   'Super Admin',
-  'System Admin',
+  'Other',
 ];
 const DEPARTMENT_OPTIONS = [
   'Infrastructure', 'Operations', 'Loans', 'IT Department', 'Hr', 'Administration', 'Other'
