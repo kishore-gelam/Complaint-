@@ -43,8 +43,6 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
 
   const loadEmployees = (targetPage = page) => {
     setLoading(true);
-    // While searching, fetch a large page so we search across all
-    // employees, not just the current page's 10.
     const effectivePageSize = q ? 1000 : PAGE_SIZE;
     const effectivePage = q ? 1 : targetPage;
     listEmployees(effectivePage, effectivePageSize)
@@ -244,7 +242,7 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                 required
               />
 
-                           <label>Password <span className="field-hint">(optional — leave blank to let employee set it via Signup)</span></label>
+              <label>Password <span className="field-hint">(optional — leave blank to let employee set it via Signup)</span></label>
               <div className="password-input-wrap">
                 <input
                   type={showPassword ? 'text' : 'password'}
