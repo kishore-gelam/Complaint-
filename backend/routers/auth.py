@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 def login(payload: EmployeeLogin, db: Session = Depends(get_db)):
     employee = db.query(Employee).filter(Employee.email == payload.email).first()
 
-    if not employee or not verify_password(payload.password, employee.password_hash):
+    if not employee or not employee.password_hash or not verify_password(payload.password, employee.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     token = create_access_token({"sub": str(employee.id), "email": employee.email})
@@ -26,25 +26,32 @@ def login(payload: EmployeeLogin, db: Session = Depends(get_db)):
     }
 @router.post("/signup", response_model=TokenResponse)
 def signup(payload: EmployeeSignup, db: Session = Depends(get_db)):
-    existing = db.query(Employee).filter(Employee.email == payload.email).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
-
-    new_employee = Employee(
-        name=payload.name,
-        email=payload.email,
-        password_hash=hash_password(payload.password),
-        role=payload.role,
-        department=payload.department,
+    employee = (
+        db.query(Employee)
+        .filter(Employee.email == payload.email, Employee.name == payload.name)
+        .first()
     )
-    db.add(new_employee)
-    db.commit()
-    db.refresh(new_employee)
 
-    token = create_access_token({"sub": str(new_employee.id), "email": new_employee.email})
+    if not employee:
+        raise HTTPException(
+            status_code=404,
+            detail="No matching employee record found. Please contact your System Admin.",
+        )
+
+    if employee.password_hash:
+        raise HTTPException(
+            status_code=400,
+            detail="This account is already activated. Please sign in instead.",
+        )
+
+    employee.password_hash = hash_password(payload.password)
+    db.commit()
+    db.refresh(employee)
+
+    token = create_access_token({"sub": str(employee.id), "email": employee.email})
 
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": new_employee,
+        "user": employee,
     }
