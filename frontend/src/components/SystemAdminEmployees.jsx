@@ -99,7 +99,11 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
           role: form.role,
           department: form.department || null,
         };
-        if (form.password) updates.password = form.password;
+        if (form.reset_password) {
+          updates.reset_password = true;
+        } else if (form.password) {
+          updates.password = form.password;
+        }
         await updateEmployee(editingId, updates);
         setShowModal(false);
         loadEmployees(page);
@@ -250,6 +254,7 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                   autoComplete="new-password"
                   value={form.password}
                   onChange={handleChange}
+                  disabled={form.reset_password}
                 />
                 <span
                   className="password-toggle-eye"
@@ -258,6 +263,16 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                   <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                 </span>
               </div>
+              {editingId && (
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 400, marginTop: '-8px' }}>
+                  <input
+                    type="checkbox"
+                    checked={!!form.reset_password}
+                    onChange={(e) => setForm({ ...form, reset_password: e.target.checked, password: '' })}
+                  />
+                  Reset password (let employee set a new one via Signup)
+                </label>
+              )}
 
               <label>Department Name</label>
               <select name="department" value={form.department} onChange={handleChange}>

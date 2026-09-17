@@ -80,7 +80,9 @@ def update_employee(
         employee.role = payload.role
     if payload.department is not None:
         employee.department = payload.department
-    if payload.password:
+    if payload.reset_password:
+        employee.password_hash = None
+    elif payload.password:
         employee.password_hash = hash_password(payload.password)
 
     db.commit()

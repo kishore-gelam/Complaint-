@@ -87,6 +87,7 @@ class EmployeeUpdate(BaseModel):
     role: Optional[str] = None
     department: Optional[str] = None
     password: Optional[str] = None
+    reset_password: Optional[bool] = False
 
 
 class EmployeeListOut(BaseModel):
