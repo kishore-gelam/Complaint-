@@ -41,7 +41,7 @@ def create_employee(
         employee_code=payload.employee_code,
         name=payload.name,
         email=payload.email,
-        password_hash=hash_password(payload.password),
+        password_hash=hash_password(payload.password) if payload.password else None,
         role=payload.role,
         department=payload.department,
     )
