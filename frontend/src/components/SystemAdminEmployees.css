@@ -212,3 +212,23 @@
 .password-toggle-eye:hover {
   color: #475569;
 }
+.reset-password-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #475569;
+  margin: 10px 0 4px;
+  cursor: pointer;
+}
+
+.reset-password-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: #4338ca;
+  cursor: pointer;
+}

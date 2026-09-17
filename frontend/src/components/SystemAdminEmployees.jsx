@@ -264,13 +264,13 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                 </span>
               </div>
               {editingId && (
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 400, marginTop: '-8px' }}>
+                <label className="reset-password-row">
                   <input
                     type="checkbox"
                     checked={!!form.reset_password}
                     onChange={(e) => setForm({ ...form, reset_password: e.target.checked, password: '' })}
                   />
-                  Reset password (let employee set a new one via Signup)
+                  <span>Reset password (let employee set a new one via Signup)</span>
                 </label>
               )}
 
