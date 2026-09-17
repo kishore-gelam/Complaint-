@@ -28,13 +28,11 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
     employee_code: '',
     name: '',
     email: '',
-    password: '',
     role: 'Employee',
     department: '',
   });
@@ -67,7 +65,7 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
 
   const openAddModal = () => {
     setEditingId(null);
-    setForm({ employee_code: '', name: '', email: '', password: '', role: 'Employee', department: '' });
+    setForm({ employee_code: '', name: '', email: '', role: 'Employee', department: '' });
     setError('');
     setShowModal(true);
   };
@@ -78,7 +76,6 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
       employee_code: emp.employee_code || '',
       name: emp.name,
       email: emp.email,
-      password: '',
       role: emp.role,
       department: emp.department || '',
     });
@@ -99,11 +96,6 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
           role: form.role,
           department: form.department || null,
         };
-        if (form.reset_password) {
-          updates.reset_password = true;
-        } else if (form.password) {
-          updates.password = form.password;
-        }
         await updateEmployee(editingId, updates);
         setShowModal(false);
         loadEmployees(page);
@@ -246,33 +238,7 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                 required
               />
 
-              <label>Password <span className="field-hint">(optional — leave blank to let employee set it via Signup)</span></label>
-              <div className="password-input-wrap">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="employee_password"
-                  autoComplete="new-password"
-                  value={form.password}
-                  onChange={handleChange}
-                  disabled={form.reset_password}
-                />
-                <span
-                  className="password-toggle-eye"
-                  onClick={() => setShowPassword((v) => !v)}
-                >
-                  <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-                </span>
-              </div>
-              {editingId && (
-                <label className="reset-password-row">
-                  <input
-                    type="checkbox"
-                    checked={!!form.reset_password}
-                    onChange={(e) => setForm({ ...form, reset_password: e.target.checked, password: '' })}
-                  />
-                  <span>Reset password (let employee set a new one via Signup)</span>
-                </label>
-              )}
+
 
               <label>Department Name</label>
               <select name="department" value={form.department} onChange={handleChange}>

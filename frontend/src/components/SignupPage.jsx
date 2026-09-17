@@ -8,6 +8,7 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,14 +61,22 @@ const SignupPage = ({ onSignupSuccess, onSwitchToLogin }) => {
         />
 
         <label className="field-label">Password</label>
-        <input
-          type="password"
-          className="field-input"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="password-field-wrap">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            className="field-input"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <span
+            className="password-toggle-icon"
+            onClick={() => setShowPassword((v) => !v)}
+          >
+            <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+          </span>
+        </div>
 
         <button className="btn btn--primary login-submit" type="submit" disabled={loading}>
           {loading ? 'Creating account…' : 'Sign Up'}
