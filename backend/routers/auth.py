@@ -3,6 +3,7 @@ try:
     from sqlalchemy.orm import Session
 except Exception:  # pragma: no cover - fallback for editors/linters when SQLAlchemy isn't installed
     from typing import Any as Session
+from sqlalchemy import func
 from database import get_db
 from models import Employee
 from schemas import EmployeeLogin, EmployeeSignup, TokenResponse
@@ -26,8 +27,6 @@ def login(payload: EmployeeLogin, db: Session = Depends(get_db)):
     }
 @router.post("/signup", response_model=TokenResponse)
 def signup(payload: EmployeeSignup, db: Session = Depends(get_db)):
-    from sqlalchemy import func
-
     employee = (
         db.query(Employee)
         .filter(
