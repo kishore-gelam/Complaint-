@@ -41,3 +41,28 @@ export async function signup(name, email, password, role = 'Employee', departmen
   }
   return res.json(); // { access_token, token_type, user }
 }
+export async function forgotPassword(email) {
+  const res = await fetch(`${BASE_URL}/api/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to request OTP');
+  }
+  return res.json();
+}
+
+export async function resetPassword(email, otp, newPassword) {
+  const res = await fetch(`${BASE_URL}/api/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, otp, new_password: newPassword }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to reset password');
+  }
+  return res.json();
+}

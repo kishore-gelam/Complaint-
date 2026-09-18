@@ -75,7 +75,7 @@ class EmployeeCreate(BaseModel):
     employee_code: str
     name: str
     email: str
-    password: Optional[str] = None
+    password: str
     role: str = "Employee"
     department: Optional[str] = None
 
@@ -97,6 +97,20 @@ class EmployeeSignup(BaseModel):
     name: str
     email: EmailStr
     password: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    otp: str
+    new_password: str
+
+
+class MessageOut(BaseModel):
+    message: str
 
 # ---------- Meetings ----------
 

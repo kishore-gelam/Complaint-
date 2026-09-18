@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { login, saveSession } from '../api/auth';
 
-const LoginPage = ({ onLoginSuccess, onSwitchToSignup }) => {
+const LoginPage = ({ onLoginSuccess, onSwitchToSignup, onSwitchToForgotPassword }) => {
     const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -65,6 +65,12 @@ const LoginPage = ({ onLoginSuccess, onSwitchToSignup }) => {
             <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </span>
         </div>
+
+        <p className="login-subtitle" style={{ textAlign: 'right', marginTop: '-12px' }}>
+          <span style={{ color: '#1e93e0', cursor: 'pointer', fontSize: '13px' }} onClick={onSwitchToForgotPassword}>
+            Forgot Password?
+          </span>
+        </p>
 
         <button className="btn btn--primary login-submit" type="submit" disabled={loading}>
           {loading ? 'Signing in…' : 'Sign In'}

@@ -29,10 +29,12 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     employee_code: '',
     name: '',
     email: '',
+    password: '',
     role: 'Employee',
     department: '',
   });
@@ -65,7 +67,7 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
 
   const openAddModal = () => {
     setEditingId(null);
-    setForm({ employee_code: '', name: '', email: '', role: 'Employee', department: '' });
+    setForm({ employee_code: '', name: '', email: '', password: '', role: 'Employee', department: '' });
     setError('');
     setShowModal(true);
   };
@@ -96,6 +98,7 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
           role: form.role,
           department: form.department || null,
         };
+        if (form.password) updates.password = form.password;
         await updateEmployee(editingId, updates);
         setShowModal(false);
         loadEmployees(page);
@@ -228,7 +231,7 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                 required
               />
 
-              <label>Email</label>
+                            <label>Email</label>
               <input
                 type="email"
                 name="employee_email"
@@ -238,7 +241,23 @@ const SystemAdminEmployees = ({ searchQuery = '' }) => {
                 required
               />
 
-
+              <label>Password {editingId && <span className="field-hint">(leave blank to keep unchanged)</span>}</label>
+              <div className="password-input-wrap">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="employee_password"
+                  autoComplete="new-password"
+                  value={form.password}
+                  onChange={handleChange}
+                  required={!editingId}
+                />
+                <span
+                  className="password-toggle-eye"
+                  onClick={() => setShowPassword((v) => !v)}
+                >
+                  <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                </span>
+              </div>
 
               <label>Department Name</label>
               <select name="department" value={form.department} onChange={handleChange}>

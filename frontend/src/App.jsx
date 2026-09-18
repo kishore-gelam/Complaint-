@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import MeetingsPage from './components/meetings/MeetingsPage';
 import LoginPage from './components/LoginPage';
+import ForgotPasswordPage from './components/ForgotPasswordPage';
 import { getSession, clearSession } from './api/auth';
 import AdminDashboard from './components/AdminDashboard';
 import AdminComplaints from './components/AdminComplaints';
@@ -68,15 +69,22 @@ const App = () => {
   if (checkingSession) return null; // avoid a login-page flash on refresh
 
     if (!currentUser) {
-    return authView === 'signup' ? (
-      <SignupPage
-        onSignupSuccess={setCurrentUser}
-        onSwitchToLogin={() => setAuthView('login')}
-      />
-    ) : (
+    if (authView === 'signup') {
+      return (
+        <SignupPage
+          onSignupSuccess={setCurrentUser}
+          onSwitchToLogin={() => setAuthView('login')}
+        />
+      );
+    }
+    if (authView === 'forgot') {
+      return <ForgotPasswordPage onBackToLogin={() => setAuthView('login')} />;
+    }
+    return (
       <LoginPage
         onLoginSuccess={setCurrentUser}
         onSwitchToSignup={() => setAuthView('signup')}
+        onSwitchToForgotPassword={() => setAuthView('forgot')}
       />
     );
   }

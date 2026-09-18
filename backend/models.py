@@ -11,6 +11,8 @@ class Employee(Base):
     password_hash = Column(String(255))
     role = Column(String(50), default="Employee")
     department = Column(String(100), nullable=True)
+    reset_otp = Column(String(10), nullable=True)
+    reset_otp_expires_at = Column(DateTime, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
 
 class Complaint(Base):
