@@ -19,11 +19,11 @@ class Complaint(Base):
     reference_id = Column(String(20), unique=True)
     title = Column(String(200))
     category = Column(String(50))
-    urgency = Column(Enum("Low", "Medium", "High"), default="Medium")
+    urgency = Column(Enum("Low", "Medium", "High", name="urgency_enum"), default="Medium")
     description = Column(Text)
-    status = Column(Enum("Under Review", "Meeting Scheduled", "Resolved"), default="Under Review")
+    status = Column(Enum("Under Review", "Meeting Scheduled", "Resolved", name="complaint_status_enum"), default="Under Review")
     current_stage = Column(
-        Enum("Submitted", "Facility Head Inspection", "Admin Review", "Final Verification"),
+        Enum("Submitted", "Facility Head Inspection", "Admin Review", "Final Verification", name="complaint_stage_enum"),
         default="Submitted"
     )
     submitted_by = Column(Integer, ForeignKey("employees.id"))
@@ -36,7 +36,7 @@ class Meeting(Base):
     location = Column(String(150))
     start_time = Column(DateTime)
     end_time = Column(DateTime)
-    status = Column(Enum("Scheduled", "Tentative", "Completed", "Cancelled"), default="Scheduled")
+    status = Column(Enum("Scheduled", "Tentative", "Completed", "Cancelled", name="meeting_status_enum"), default="Scheduled")
     related_complaint_id = Column(Integer, ForeignKey("complaints.id"), nullable=True)
     created_by = Column(Integer, ForeignKey("employees.id"))
     join_url = Column(String(255), nullable=True)
