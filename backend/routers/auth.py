@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.post("/login", response_model=TokenResponse)
 def login(payload: EmployeeLogin, db: Session = Depends(get_db)):
-    employee = db.query(Employee).filter(Employee.email == payload.email).first()
+    employee = db.query(Employee).filter(func.lower(Employee.email) == payload.email.strip().lower()).first()
 
     if not employee or not employee.password_hash or not verify_password(payload.password, employee.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -26,9 +26,14 @@ def login(payload: EmployeeLogin, db: Session = Depends(get_db)):
     }
 @router.post("/signup", response_model=TokenResponse)
 def signup(payload: EmployeeSignup, db: Session = Depends(get_db)):
+    from sqlalchemy import func
+
     employee = (
         db.query(Employee)
-        .filter(Employee.email == payload.email, Employee.name == payload.name)
+        .filter(
+            func.lower(Employee.email) == payload.email.strip().lower(),
+            func.lower(Employee.name) == payload.name.strip().lower(),
+        )
         .first()
     )
 
